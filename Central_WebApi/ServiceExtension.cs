@@ -7,8 +7,8 @@ namespace Central_WebApi
         public static void AddWebApiCors( this IServiceCollection services, IConfiguration configuration, string policyName )
         {
             var settingsSection = configuration.GetSection("CorsIPs");
-            string[] settings = settingsSection.Get<string[]>();
-            settings = settings ?? new string[0];
+            string[]? settings = settingsSection?.Get<string[]>();
+            settings = settings ?? Array.Empty < string>();
 
             services.AddCors(options =>
             {

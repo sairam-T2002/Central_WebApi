@@ -17,7 +17,7 @@ namespace Central_Service.Core
     }
     public class DBUtils
     {
-        public static string filePath = "D:\\Sairam\\Solutions\\ConsoleApp\\WebApioneService\\appsettings.json";
+        public readonly static string filePath = "D:\\Sairam\\Solutions\\ConsoleApp\\WebApioneService\\appsettings.json";
         public static string GetConnectionString()
         {
             string jsonString = File.ReadAllText(filePath);
@@ -45,13 +45,13 @@ namespace Central_Service.Core
     }
     public class DBParameter
     {
-        private object _value;
+        private object? _value;
 
-        public bool IsFunction { get; private set; }
+        public bool? IsFunction { get; private set; }
 
-        public string Key { get; set; }
+        public string? Key { get; set; }
 
-        public object Value
+        public object? Value
         {
             get
             {
