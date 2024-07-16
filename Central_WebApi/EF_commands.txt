@@ -1,0 +1,2 @@
+﻿dotnet ef migrations add InitialCreate --project ../Repository(DAL) --startup-project ../Central_WebApi
+dotnet ef database update --project ../Repository(DAL) --startup-project ../Central_WebApi

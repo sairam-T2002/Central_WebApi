@@ -21,9 +21,9 @@ namespace Central_WebApi
             });
         }
 
-        public static void AddApiServices( this IServiceCollection services )
+        public static void AddApiServices( this IServiceCollection services,IConfiguration configuration )
         {
-            services.ConfigureServices();
+            services.ConfigureServices(configuration);
         }
     }
 }
