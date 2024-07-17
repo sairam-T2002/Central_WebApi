@@ -1,4 +1,3 @@
-using Central_WebApi.Core;
 using Central_WebApi;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +12,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddWebApiCors(builder.Configuration, AppConstants.CROS_POLICY_NAME);
+//builder.Services.AddWebApiCors(builder.Configuration, AppConstants.CROS_POLICY_NAME);
 builder.Services.AddApiServices(builder.Configuration);
 builder.Services.AddSwaggerGen(c =>
 {
@@ -69,6 +68,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

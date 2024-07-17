@@ -19,4 +19,8 @@
 		<ProjectReference Include="..\Central_Service\Central_Service.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+
 </Project>

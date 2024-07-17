@@ -16,6 +16,7 @@ namespace Central_Service
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<ITestService, TestService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IStaticDataService, StaticDataService>();
         }
     }
 }

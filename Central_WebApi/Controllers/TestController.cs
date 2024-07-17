@@ -1,5 +1,4 @@
 ﻿using Central_Service.Interface;
-using Central_Service.Model;
 using Central_WebApi.Core;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;

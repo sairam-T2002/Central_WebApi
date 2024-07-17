@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Repository_DAL_.Model;
+﻿using Repository_DAL_.Model;
 using Central_Service.Model;
 
 namespace Central_Service.Interface

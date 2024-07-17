@@ -2,17 +2,14 @@
 using Central_Service.Model;
 using Repository_DAL_;
 using Repository_DAL_.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BCrypt.Net;
+using ExtensionMethods;
 
 namespace Central_Service.Service
 {
     public class AuthService : IAuthService
     {
-        private IRepository<User> _user;
+        private readonly IRepository<User> _user;
 
         public AuthService( IRepository<User> user )
         {
@@ -21,22 +18,35 @@ namespace Central_Service.Service
 
         public async Task<User> Login( Login cred )
         {
-            var usrs = await _user.Find(x => x.Usr_Nam == cred.Username && x.Pwd == cred.Password);
+            // Find the user by username
+            var usrs = await _user.Find(x => x.Usr_Nam == cred.Username);
             var usr = usrs.FirstOrDefault();
-            return usr;
+
+            // If user is found and password matches
+            if (usr != null && BCrypt.Net.BCrypt.Verify(cred.Password, usr.Pwd))
+            {
+                return usr;
+            }
+
+            // If user is not found or password does not match
+            return null;
         }
 
         public async Task<bool> Signup( User user )
         {
             try
             {
-                var usrs = await _user.Find(x => x.Usr_Nam == user.Usr_Nam || x.E_Mail == user.E_Mail);
+                User temp = user.DeepClone<User>();
+                var usrs = await _user.Find(x => x.Usr_Nam == temp.Usr_Nam || x.E_Mail == temp.E_Mail);
                 var usr = usrs.FirstOrDefault();
                 if (usr != null)
                 {
                     return false;
                 }
-                await _user.Add(user);
+
+                temp.Pwd = BCrypt.Net.BCrypt.HashPassword(temp.Pwd);
+
+                await _user.Add(temp);
                 return true;
             }
             catch (Exception ex)
