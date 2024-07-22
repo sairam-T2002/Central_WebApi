@@ -2,6 +2,7 @@
 using Central_Service.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 
 namespace Central_WebApi.Controllers
 {
@@ -12,7 +13,8 @@ namespace Central_WebApi.Controllers
     {
         private readonly IStaticDataService _service;
         private readonly IWebHostEnvironment _env;
-        public StaticDataController( IStaticDataService service, IWebHostEnvironment env ) {
+        private readonly string _imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Images");
+        public StaticDataController( IStaticDataService service, IWebHostEnvironment env) {
             _service = service;
             _env = env;
         }
@@ -23,6 +25,31 @@ namespace Central_WebApi.Controllers
             var webRootPath = _env.WebRootPath;
             var imagePath = Path.Combine(webRootPath, "Images");
             return await _service.ServeStaticData(imagePath);
+        }
+
+        [HttpGet("link/{filename}")]
+        public IActionResult GetImageLink( string filename )
+        {
+            var fileUrl = Url.Action(nameof(GetImage), new { filename });
+            return Ok(new { Url = fileUrl });
+        }
+
+        [HttpGet("{filename}")]
+        public async Task<IActionResult> GetImage( string filename )
+        {
+            var filePath = Path.Combine(_imagePath, filename);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            return File(memory, "image/jpeg", filename);
         }
     }
 }

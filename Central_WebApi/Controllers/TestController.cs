@@ -7,7 +7,6 @@ namespace Central_WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors(AppConstants.CROS_POLICY_NAME)]
     public class TestController : ControllerBase
     {
         #region Private 

@@ -24,6 +24,13 @@ namespace Central_Service.Model
     }
     public class StaticDataRet_DTO
     {
-        public Dictionary<string, Dictionary<string,List<Product_DTO>>> Catlog { get; set;} = new Dictionary<string, Dictionary<string, List<Product_DTO>>>();
+        public Dictionary<string, Temp_DTO> Contents { get; set; } = new Dictionary<string, Temp_DTO>();
+    }
+    public class Temp_DTO
+    {
+        public List<Product_DTO> products { get; set; } = new List<Product_DTO>();
+        public string name {  set; get; }
+        public int Image_Srl { set; get; }
+        public string Img_Url {  set; get; }
     }
 }

@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Central_WebApi.Controllers
 {
@@ -57,6 +58,22 @@ namespace Central_WebApi.Controllers
                 rng.GetBytes(randomNumber);
                 return Convert.ToBase64String(randomNumber);
             }
+        }
+
+        private bool IsTokenExpired( string token )
+        {
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(token)) return true;
+
+            var jwtToken = handler.ReadJwtToken(token);
+            var expClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Exp);
+
+            if (expClaim == null) return true;
+
+            var expTimestamp = long.Parse(expClaim.Value);
+            var expDateTime = DateTimeOffset.FromUnixTimeSeconds(expTimestamp).UtcDateTime;
+
+            return expDateTime < DateTime.UtcNow;
         }
 
         private ClaimsPrincipal GetPrincipalFromExpiredToken( string token )
@@ -126,6 +143,7 @@ namespace Central_WebApi.Controllers
         /// <returns>New access and refresh tokens</returns>
         /// <response code="200">Returns new JWT tokens</response>
         /// <response code="400">If the refresh token is invalid</response>
+        [Authorize]
         [HttpPost("Refresh")]
         public async Task<ActionResult> Refresh( [FromBody] RefreshTokenRequest refreshRequest )
         {
