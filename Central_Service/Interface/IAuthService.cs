@@ -6,7 +6,7 @@ namespace Central_Service.Interface
     public interface IAuthService
     {
         Task<User> Login( Login cred);
-        Task<bool> Signup( User user);
+        Task<int> Signup( User user);
         Task SaveRefreshToken( string username, string refreshToken );
         Task<string> GetRefreshToken( string username );
     }

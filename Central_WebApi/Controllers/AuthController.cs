@@ -129,11 +129,22 @@ namespace Central_WebApi.Controllers
         public async Task<ActionResult> Signup( [FromBody] User user )
         {
             var usr = await _service.Signup(user);
-            if (usr)
+            if (usr == 1)
             {
                 return Ok("User Registered successfully");
+            } 
+            else if (usr == -1)
+            {
+                return BadRequest("User already exists for the specified email");
             }
-            return BadRequest("User already exists");
+            else if (usr == -2)
+            {
+                return BadRequest("User already exists for the specified username");
+            }
+            else
+            {
+                return BadRequest("Invalid Parameters");
+            }
         }
 
         /// <summary>

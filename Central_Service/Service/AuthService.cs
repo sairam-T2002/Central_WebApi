@@ -18,21 +18,18 @@ namespace Central_Service.Service
 
         public async Task<User> Login( Login cred )
         {
-            // Find the user by username
-            var usrs = await _user.Find(x => x.Usr_Nam == cred.Username);
+            var usrs = await _user.Find(x => x.Usr_Nam == cred.Username || x.E_Mail == cred.Username);
             var usr = usrs.FirstOrDefault();
 
-            // If user is found and password matches
             if (usr != null && BCrypt.Net.BCrypt.Verify(cred.Password, usr.Pwd))
             {
                 return usr;
             }
 
-            // If user is not found or password does not match
             return null;
         }
 
-        public async Task<bool> Signup( User user )
+        public async Task<int> Signup( User user )
         {
             try
             {
@@ -41,17 +38,21 @@ namespace Central_Service.Service
                 var usr = usrs.FirstOrDefault();
                 if (usr != null)
                 {
-                    return false;
+                    if(usr.E_Mail == temp.E_Mail)
+                    {
+                        return -1;
+                    }
+                    return -2;
                 }
 
                 temp.Pwd = BCrypt.Net.BCrypt.HashPassword(temp.Pwd);
 
                 await _user.Add(temp);
-                return true;
+                return 1;
             }
             catch (Exception ex)
             {
-                return false;
+                return 0;
             }
         }
 
