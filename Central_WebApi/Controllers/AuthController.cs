@@ -158,24 +158,31 @@ namespace Central_WebApi.Controllers
         [HttpPost("Refresh")]
         public async Task<ActionResult> Refresh( [FromBody] RefreshTokenRequest refreshRequest )
         {
-            var principal = GetPrincipalFromExpiredToken(refreshRequest.AccessToken);
-            if (principal == null)
+            try
             {
-                return BadRequest("Invalid access token");
-            }
+                var principal = GetPrincipalFromExpiredToken(refreshRequest.AccessToken);
+                if (principal == null)
+                {
+                    return BadRequest("Invalid access token");
+                }
 
-            var username = principal.Identity.Name;
-            var savedRefreshToken = await _service.GetRefreshToken(username);
-            if (savedRefreshToken != refreshRequest.RefreshToken)
+                var username = principal.Identity.Name;
+                var savedRefreshToken = await _service.GetRefreshToken(username);
+                if (savedRefreshToken != refreshRequest.RefreshToken)
+                {
+                    return BadRequest("Invalid refresh token");
+                }
+
+                var newAccessToken = GenerateAccessToken(username);
+                var newRefreshToken = GenerateRefreshToken();
+                await _service.SaveRefreshToken(username, newRefreshToken);
+
+                return Ok(new { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
+            }
+            catch(Exception ex)
             {
-                return BadRequest("Invalid refresh token");
+                return BadRequest(ex.Message);
             }
-
-            var newAccessToken = GenerateAccessToken(username);
-            var newRefreshToken = GenerateRefreshToken();
-            await _service.SaveRefreshToken(username, newRefreshToken);
-
-            return Ok(new { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
         }
         #endregion
     }

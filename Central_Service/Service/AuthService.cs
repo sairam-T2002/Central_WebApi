@@ -4,16 +4,19 @@ using Repository_DAL_;
 using Repository_DAL_.Model;
 using BCrypt.Net;
 using ExtensionMethods;
+using Microsoft.Extensions.Logging;
 
 namespace Central_Service.Service
 {
     public class AuthService : IAuthService
     {
         private readonly IRepository<User> _user;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService( IRepository<User> user )
+        public AuthService( IRepository<User> user, ILogger<AuthService> logger )
         {
             _user = user;
+            _logger = logger;
         }
 
         public async Task<User> Login( Login cred )
@@ -52,6 +55,7 @@ namespace Central_Service.Service
             }
             catch (Exception ex)
             {
+                _logger.LogInformation(ex.Message);
                 return 0;
             }
         }
