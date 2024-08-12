@@ -17,6 +17,8 @@ namespace Central_Service
             services.AddScoped<ITestService, TestService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IStaticDataService, StaticDataService>();
+            services.AddScoped<IPaymentService, PaymentService>(); 
+
         }
     }
 }
