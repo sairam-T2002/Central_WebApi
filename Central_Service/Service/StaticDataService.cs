@@ -8,22 +8,21 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using ExtensionMethods;
+using Central_Service.Core;
 
 namespace Central_Service.Service
 {
-    public class StaticDataService : IStaticDataService
+    public class StaticDataService : ServiceBase,IStaticDataService
     {
         private readonly IRepository<Category> _categories;
         private readonly IRepository<Product> _products;
         private readonly IRepository<Image> _images;
-        private readonly ILogger<StaticDataService> _logger;
 
-        public StaticDataService( IRepository<Category> categories, IRepository<Product> products, IRepository<Image> images, ILogger<StaticDataService> logger )
+        public StaticDataService( IRepository<Category> categories, IRepository<Product> products, IRepository<Image> images, ILogger<StaticDataService> logger, IServiceProvider serviceProvider ):base(logger, serviceProvider)
         {
             _categories = categories;
             _products = products;
             _images = images;
-            _logger = logger;
         }
 
         public async Task<StaticDataRet_DTO> ServeStaticData( string WebRootPath )
@@ -73,7 +72,7 @@ namespace Central_Service.Service
             }
             catch (Exception ex)
             {
-                _logger.LogInformation($"{nameof(ServeStaticData)} exception, exception message: '{ex.Message}' and exception object {ex.JSONStringify<Exception>()}");
+                Logger.LogInformation($"{nameof(ServeStaticData)} exception, exception message: '{ex.Message}' and exception object {ex.JSONStringify<Exception>()}");
             }
             return output;
         }

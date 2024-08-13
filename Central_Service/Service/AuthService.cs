@@ -5,15 +5,16 @@ using Repository_DAL_.Model;
 using BCrypt.Net;
 using ExtensionMethods;
 using Microsoft.Extensions.Logging;
+using Central_Service.Core;
 
 namespace Central_Service.Service
 {
-    public class AuthService : IAuthService
+    public class AuthService : ServiceBase,IAuthService
     {
         private readonly IRepository<User> _user;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService( IRepository<User> user, ILogger<AuthService> logger )
+        public AuthService( IRepository<User> user, ILogger<AuthService> logger, IServiceProvider serviceProvider ) : base(logger, serviceProvider)
         {
             _user = user;
             _logger = logger;

@@ -18,9 +18,9 @@ namespace Central_WebApi.Controllers
         }
 
         [HttpPost("AcceptPayment")]
-        public async Task<IPaymentDTO> AcceptPayment( [FromBody] PaymentInput input )
+        public IPaymentDTO AcceptPayment( [FromBody] PaymentInput input )
         {
-            return await _paymentService.AcceptPayment(input.input,input.PaymentMethod).ConfigureAwait(false);
+            return _paymentService.AcceptPayment(input.input,input.PaymentMethod);
         }
         
     }

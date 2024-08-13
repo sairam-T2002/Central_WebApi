@@ -1,8 +1,8 @@
 ﻿
 namespace Central_Service.Interface
 {
-    public interface ITestService : IDisposable
+    public interface ITestService
     {
-        Task<string> TestMethod();
+        string TestMethod();
     }
 }

@@ -7,6 +7,7 @@ namespace Repository_DAL_.Model
         [Key]
         public int Image_Srl { get; set; }
         public string? Image_Description { get; set; }
-        public string Image_Type { get; set; }
+        public string Image_Type { get; set; } = string.Empty;
+        public bool IsCarousel { get; set; }
     }
 }

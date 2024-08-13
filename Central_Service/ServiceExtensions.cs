@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Repository_DAL_;
 using Microsoft.Extensions.Configuration;
+using Central_Service.JWT;
 
 namespace Central_Service
 {
@@ -18,6 +19,8 @@ namespace Central_Service
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IStaticDataService, StaticDataService>();
             services.AddScoped<IPaymentService, PaymentService>(); 
+            services.AddScoped<IAppDataService, AppDataService>(); 
+            services.AddScoped<TokenHelper>(); 
 
         }
     }

@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
+using Central_Service.JWT;
 
 namespace Central_WebApi.Controllers
 {
@@ -18,84 +19,20 @@ namespace Central_WebApi.Controllers
         #region Private
         private readonly IAuthService _service;
         private readonly IConfiguration _configuration;
+        private readonly TokenHelper _token;
 
         #endregion
 
         #region Constructor
-        public AuthController( IAuthService service, IConfiguration configuration)
+        public AuthController( IAuthService service, IConfiguration configuration, TokenHelper token)
         {
             _service = service;
             _configuration = configuration;
+            _token = token;
         }
         #endregion
 
         #region Actions
-
-
-        private string GenerateAccessToken( string username )
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, username),
-            };
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(15),
-                signingCredentials: credentials
-            );
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
-        }
-
-        private bool IsTokenExpired( string token )
-        {
-            var handler = new JwtSecurityTokenHandler();
-            if (!handler.CanReadToken(token)) return true;
-
-            var jwtToken = handler.ReadJwtToken(token);
-            var expClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Exp);
-
-            if (expClaim == null) return true;
-
-            var expTimestamp = long.Parse(expClaim.Value);
-            var expDateTime = DateTimeOffset.FromUnixTimeSeconds(expTimestamp).UtcDateTime;
-
-            return expDateTime < DateTime.UtcNow;
-        }
-
-        private ClaimsPrincipal GetPrincipalFromExpiredToken( string token )
-        {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
-                ValidateLifetime = false
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Invalid token");
-
-            return principal;
-        }
 
         /// <summary>
         /// Authenticates a user and returns JWT tokens.
@@ -105,14 +42,14 @@ namespace Central_WebApi.Controllers
         /// <response code="200">Returns the JWT tokens</response>
         /// <response code="401">If the credentials are invalid</response>
         [HttpPost("Login")]
-        public async Task<ActionResult> Login( [FromBody] Login cred )
+        public async Task<IActionResult> Login( [FromBody] Login cred )
         {
             var usr = await _service.Login(cred);
             if (usr != null)
             {
-                var accessToken = GenerateAccessToken(cred.Username);
-                var refreshToken = GenerateRefreshToken();
-                await _service.SaveRefreshToken(cred.Username, refreshToken);
+                var accessToken = _token.GenerateAccessToken(cred.Username, _configuration);
+                var refreshToken = _token.GenerateRefreshToken();
+                await _service.SaveRefreshToken(cred.Username, refreshToken).ConfigureAwait(false); ;
                 return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
             }
             return Unauthorized("No user was found");
@@ -126,9 +63,9 @@ namespace Central_WebApi.Controllers
         /// <response code="200">Returns a success message</response>
         /// <response code="400">If the registration details are invalid</response>
         [HttpPost("Signup")]
-        public async Task<ActionResult> Signup( [FromBody] User user )
+        public async Task<IActionResult> Signup( [FromBody] User user )
         {
-            var usr = await _service.Signup(user);
+            var usr = await _service.Signup(user).ConfigureAwait(false); ;
             if (usr == 1)
             {
                 return Ok("User Registered successfully");
@@ -156,25 +93,25 @@ namespace Central_WebApi.Controllers
         /// <response code="400">If the refresh token is invalid</response>
         [Authorize]
         [HttpPost("Refresh")]
-        public async Task<ActionResult> Refresh( [FromBody] RefreshTokenRequest refreshRequest )
+        public async Task<IActionResult> Refresh( [FromBody] RefreshTokenRequest refreshRequest )
         {
             try
             {
-                var principal = GetPrincipalFromExpiredToken(refreshRequest.AccessToken);
+                var principal = _token.GetPrincipalFromExpiredToken(refreshRequest.AccessToken,_configuration);
                 if (principal == null)
                 {
                     return BadRequest("Invalid access token");
                 }
 
                 var username = principal.Identity.Name;
-                var savedRefreshToken = await _service.GetRefreshToken(username);
+                var savedRefreshToken = await _service.GetRefreshToken(username).ConfigureAwait(false); ;
                 if (savedRefreshToken != refreshRequest.RefreshToken)
                 {
                     return BadRequest("Invalid refresh token");
                 }
 
-                var newAccessToken = GenerateAccessToken(username);
-                var newRefreshToken = GenerateRefreshToken();
+                var newAccessToken = _token.GenerateAccessToken(username,_configuration);
+                var newRefreshToken = _token.GenerateRefreshToken();
                 await _service.SaveRefreshToken(username, newRefreshToken);
 
                 return Ok(new { AccessToken = newAccessToken, RefreshToken = newRefreshToken });

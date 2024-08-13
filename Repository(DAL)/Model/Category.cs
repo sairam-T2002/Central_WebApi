@@ -7,12 +7,12 @@ namespace Repository_DAL_.Model
     {
         [Key]
         public int Category_Id { get; set; }
-        public string CategoryName { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
 
         [ForeignKey("Image")]
         public int Image_Srl { get; set; }
-        public virtual Image Image { get; set; }
+        public virtual Image? Image { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Product>? Products { get; set; }
     }
 }

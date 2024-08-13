@@ -13,6 +13,11 @@ namespace Repository_DAL_
         Task Remove( T entity );
         Task RemoveRange( IEnumerable<T> entities );
         Task Update( T entity );
+        Task<List<TResult>> Join<TInner, TKey, TResult>(
+        Expression<Func<T, TKey>> outerKeySelector,
+        Expression<Func<TInner, TKey>> innerKeySelector,
+        Expression<Func<T, TInner, TResult>> resultSelector
+    ) where TInner : class;
     }
 
     public class Repository<T> : IRepository<T> where T : class
@@ -67,6 +72,22 @@ namespace Repository_DAL_
         {
             _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<TResult>> Join<TInner, TKey, TResult>(
+        Expression<Func<T, TKey>> outerKeySelector,
+        Expression<Func<TInner, TKey>> innerKeySelector,
+        Expression<Func<T, TInner, TResult>> resultSelector
+        ) where TInner : class
+        {
+            return await _context.Set<T>()
+                .Join(
+                    _context.Set<TInner>(),
+                    outerKeySelector,
+                    innerKeySelector,
+                    resultSelector
+                )
+                .ToListAsync();
         }
     }
 }

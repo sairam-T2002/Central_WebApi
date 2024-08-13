@@ -1,4 +1,4 @@
-﻿using Central_Service.Payment;
+﻿using Central_Service.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Central_Service.Interface
 {
-    public interface IPaymentService
+    public interface IAppDataService
     {
-        IPaymentDTO AcceptPayment( IPaymentDTO input,string PaymentMethod);
+        Task<AppDataModel> HomePageData(string webroot);
     }
 }

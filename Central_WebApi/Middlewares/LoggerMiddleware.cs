@@ -4,14 +4,6 @@ using System.Text;
 
 namespace Central_WebApi.Middlewares
 {
-    public static class ActionLoggingMiddlewareExtensions
-    {
-        public static IApplicationBuilder UseActionLogging( this IApplicationBuilder builder )
-        {
-            return builder.UseMiddleware<LoggerMiddleware>();
-        }
-    }
-
     public class LoggerMiddleware
     {
         private readonly RequestDelegate _next;

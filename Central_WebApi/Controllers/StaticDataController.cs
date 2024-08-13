@@ -24,14 +24,7 @@ namespace Central_WebApi.Controllers
         {
             var webRootPath = _env.WebRootPath;
             var imagePath = Path.Combine(webRootPath, "Images");
-            return await _service.ServeStaticData(imagePath);
-        }
-
-        [HttpGet("link/{filename}")]
-        public IActionResult GetImageLink( string filename )
-        {
-            var fileUrl = Url.Action(nameof(GetImage), new { filename });
-            return Ok(new { Url = fileUrl });
+            return await _service.ServeStaticData(imagePath).ConfigureAwait(false); ;
         }
 
         [HttpGet("{filename}")]
