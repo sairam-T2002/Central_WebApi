@@ -15,15 +15,15 @@ namespace Central_WebApi.Controllers
         #region Constructor
         public TestController( ITestService service )
         {
-            this._service = service;
+            _service = service;
         }
         #endregion
 
         #region Public
         [HttpGet("TestMethod")]
-        public async Task<string> TestMethod()
+        public string TestMethod()
         {
-            return await this._service.TestMethod().ConfigureAwait(false);
+            return _service.TestMethod();
         }
         #endregion
     }

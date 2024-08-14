@@ -13,5 +13,6 @@ namespace Repository_DAL_.Model
         public int id { get; set; }
         public string devUrl { get; set; } = string.Empty;
         public string prodUrl { get; set; } = string.Empty;
+        public string? gmapkey {  get; set; } = string.Empty;
     }
 }

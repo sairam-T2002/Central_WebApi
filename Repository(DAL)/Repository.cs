@@ -17,7 +17,7 @@ namespace Repository_DAL_
         Expression<Func<T, TKey>> outerKeySelector,
         Expression<Func<TInner, TKey>> innerKeySelector,
         Expression<Func<T, TInner, TResult>> resultSelector
-    ) where TInner : class;
+        ) where TInner : class;
     }
 
     public class Repository<T> : IRepository<T> where T : class

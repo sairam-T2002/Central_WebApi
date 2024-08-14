@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ExtensionMethods;
+using Microsoft.EntityFrameworkCore;
 
 namespace Central_Service.Service
 {
@@ -18,12 +19,14 @@ namespace Central_Service.Service
         private readonly IRepository<Category> _categories;
         private readonly IRepository<Product> _products;
         private readonly IRepository<Image> _images;
+        private readonly EFContext _dbcontext;
 
-        public AppDataService( ILogger<AppDataService> logger, IRepository<Category> categories, IRepository<Product> products, IRepository<Image> images, IServiceProvider serviceProvider ) : base(logger, serviceProvider)
+        public AppDataService( EFContext dbcontext,ILogger<AppDataService> logger, IRepository<Category> categories, IRepository<Product> products, IRepository<Image> images, IServiceProvider serviceProvider ) : base(logger, serviceProvider)
         {
             _categories = categories;
             _products = products;
             _images = images;
+            _dbcontext = dbcontext;
         }
 
         public async Task<AppDataModel> HomePageData( string baseUrl )
@@ -33,6 +36,7 @@ namespace Central_Service.Service
             {
                 var images = await _images.GetAll();
                 var carouselImages = images.Where(img => img.IsCarousel);
+                var products = _dbcontext.Products.FromSqlRaw(@"select * from ""Products"";").ToList();
 
                 foreach (var img in carouselImages)
                 {
