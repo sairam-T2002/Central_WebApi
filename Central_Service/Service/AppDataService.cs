@@ -29,6 +29,14 @@ namespace Central_Service.Service
             _dbcontext = dbcontext;
         }
 
+        public async Task<string> AppConfig()
+        {
+            var repo = GetService<IRepository<ControlMaster>>();
+
+            string? mapkey = (await repo.Find(x=>x.id == 1))[0].gmapkey ;
+            return mapkey ?? "";
+        }
+
         public async Task<AppDataModel> HomePageData( string baseUrl )
         {
             var output = new AppDataModel();

@@ -14,7 +14,7 @@ namespace Central_WebApi
             {
                 options.AddPolicy(policyName, builder =>
                 {
-                    builder.WithOrigins(settings)
+                    builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 });

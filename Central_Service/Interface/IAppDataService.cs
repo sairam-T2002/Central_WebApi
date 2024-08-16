@@ -10,5 +10,6 @@ namespace Central_Service.Interface
     public interface IAppDataService
     {
         Task<AppDataModel> HomePageData(string webroot);
+        Task<string> AppConfig();
     }
 }

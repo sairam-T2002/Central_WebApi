@@ -1,6 +1,7 @@
 ﻿using Central_Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Central_WebApi.Controllers
 {
@@ -30,6 +31,13 @@ namespace Central_WebApi.Controllers
                 return NotFound();
             }
             return Ok(result);
+        }
+
+        [HttpGet("GetAppConfig")]
+        public async Task<IActionResult> GetAppConfig()
+        {
+            var result = await _service.AppConfig().ConfigureAwait(false);
+            return Ok(new { googleMapsApiKey = result });
         }
     }
 }

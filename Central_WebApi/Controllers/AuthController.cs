@@ -91,7 +91,6 @@ namespace Central_WebApi.Controllers
         /// <returns>New access and refresh tokens</returns>
         /// <response code="200">Returns new JWT tokens</response>
         /// <response code="400">If the refresh token is invalid</response>
-        [Authorize]
         [HttpPost("Refresh")]
         public async Task<IActionResult> Refresh( [FromBody] RefreshTokenRequest refreshRequest )
         {
@@ -104,7 +103,7 @@ namespace Central_WebApi.Controllers
                 }
 
                 var username = principal.Identity.Name;
-                var savedRefreshToken = await _service.GetRefreshToken(username).ConfigureAwait(false); ;
+                var savedRefreshToken = await _service.GetRefreshToken(username).ConfigureAwait(false);
                 if (savedRefreshToken != refreshRequest.RefreshToken)
                 {
                     return BadRequest("Invalid refresh token");
