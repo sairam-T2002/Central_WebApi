@@ -24,6 +24,7 @@ builder.Host.UseSerilog(); // Use Serilog for logging
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddWebApiCors(builder.Configuration, "AllowAll");
 builder.Services.AddApiServices(builder.Configuration);
 
 builder.Services.AddSwaggerGen(c =>
@@ -92,6 +93,7 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 
+app.UseCors("AllowAll");
 app.UseActionLogging();
 //app.UseTokenValidation();
 app.UseHttpsRedirection();
