@@ -57,9 +57,8 @@ namespace Central_Service.Service
                             Product_DTO temp = new Product_DTO { 
                                 prd_id = product.Product_Id,
                                 name = product.Product_Name,
-                                price = product.Price.Split(',').Select(int.Parse).ToList(),
-                                qunatityList = product.Quantity_List.Split(',').ToList(),
-                                isVeg = product.IsVeg == "true",
+                                price = product.Price,
+                                isVeg = product.IsVeg,
                                 Img_url = imageUrl,
                                 Image_Srl = product.Image_Srl,
                                 Category_Id = product.Category_Id

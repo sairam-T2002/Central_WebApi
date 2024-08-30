@@ -16,8 +16,7 @@ namespace Central_Service.Model
         public int prd_id { get; set; }
         public string name { get; set; }
         public bool isVeg { get; set; }
-        public List<int> price { get; set; } = new List<int>();
-        public List<string> qunatityList { get; set; }
+        public int price { get; set; }
         public int Image_Srl { get; set; }
         public int Category_Id { get; set; }
         public string Img_url {  get; set; }

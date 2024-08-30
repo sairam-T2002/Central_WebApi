@@ -2,7 +2,6 @@
 using Central_Service.Model;
 using Repository_DAL_;
 using Repository_DAL_.Model;
-using BCrypt.Net;
 using ExtensionMethods;
 using Microsoft.Extensions.Logging;
 using Central_Service.Core;
@@ -30,7 +29,7 @@ namespace Central_Service.Service
                 return usr;
             }
 
-            return null;
+            return default;
         }
 
         public async Task<int> Signup( User user )
