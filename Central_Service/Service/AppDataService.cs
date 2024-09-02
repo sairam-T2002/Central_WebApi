@@ -44,7 +44,6 @@ namespace Central_Service.Service
             {
                 var images = await _images.GetAll();
                 var carouselImages = images.Where(img => img.IsCarousel);
-                var products = _dbcontext.Products.FromSqlRaw(@"select * from ""Products"";").ToList();
 
                 foreach (var img in carouselImages)
                 {
@@ -80,7 +79,14 @@ namespace Central_Service.Service
                             Product_Id = product.Product_Id,
                             Product_Name = product.Product_Name,
                             Category_Id = product.Category_Id,
-                            Image_Url = imageUrl
+                            Image_Url = imageUrl,
+                            IsVeg = product.IsVeg,
+                            IsBestSeller = product.IsBestSeller,
+                            StockCount = product.StockCount,
+                            Rating = product.Reviews,
+                            IsFeatured = product.IsFeatured,
+                            Price = product.Price,
+
                         });
                     }
                 }

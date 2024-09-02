@@ -24,5 +24,11 @@ namespace Central_Service.Model
         public string Product_Name { get; set; } = string.Empty;
         public int Category_Id { get; set; }
         public string Image_Url { get; set; } = string.Empty;
+        public bool IsVeg { get; set; }
+        public bool IsBestSeller { get; set; }
+        public int StockCount { get; set; }
+        public double Rating { get; set; }
+        public bool IsFeatured { get; set; }
+        public int Price { get; set; }
     }
 }

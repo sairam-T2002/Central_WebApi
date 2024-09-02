@@ -31,5 +31,7 @@ namespace Repository_DAL_.Model
         public double Reviews { get; set; }
 
         public int StockCount { get; set; }
+
+        public bool IsBestSeller {  get; set; }
     }
 }
