@@ -102,7 +102,7 @@ namespace Central_WebApi.Controllers
                     return BadRequest("Invalid access token");
                 }
 
-                var username = principal.Identity.Name;
+                var username = principal?.Identity?.Name ?? "";
                 var savedRefreshToken = await _service.GetRefreshToken(username).ConfigureAwait(false);
                 if (savedRefreshToken != refreshRequest.RefreshToken)
                 {
