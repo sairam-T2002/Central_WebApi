@@ -30,7 +30,7 @@ namespace Central_Service.Service
         }
 
         public async Task<string> AppConfig()
-        {
+        {  
             var repo = GetService<IRepository<ControlMaster>>();
 
             string? mapkey = (await repo.Find(x=>x.id == 1))[0].gmapkey ;
