@@ -12,6 +12,12 @@ namespace Central_Service.Model
         public List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
         public List<ProductDto> FeaturedProducts { get; set; } = new List<ProductDto>();
     }
+    public class SearchModel
+    {
+        public string CategoryName { get; set; } = string.Empty;
+        public int CategoryId { get; set; }
+        public List<ProductDto> Result { get; set; } = new List<ProductDto>();
+    }
     public class CategoryDto
     {
         public int Category_Id { get; set; }

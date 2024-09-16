@@ -32,6 +32,23 @@ namespace Central_WebApi.Controllers
             }
             return Ok(result);
         }
+        [HttpGet("GetSearchResults/{category}")]
+        public async Task<IActionResult> GetSearchResults( string category, string? searchquery = null )
+        {
+            var request = HttpContext.Request;
+            var url = $"{request.Scheme}://{request.Host}";
+
+            // Pass the searchquery (it could be null) to the service
+            var result = await _service.GetSeachResult(url, category, searchquery ?? "").ConfigureAwait(false);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
 
         [HttpGet("GetAppConfig")]
         public async Task<IActionResult> GetAppConfig()

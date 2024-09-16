@@ -10,6 +10,7 @@ namespace Central_Service.Interface
     public interface IAppDataService
     {
         Task<AppDataModel> HomePageData(string webroot);
+        Task<SearchModel> GetSeachResult( string baseUrl, string category, string searchQuery);
         Task<string> AppConfig();
     }
 }

@@ -51,7 +51,7 @@ namespace Central_Service.Service
                     output.CarouselUrls.Add(imageUrl);
                 }
 
-                var categories = await _categories.GetAll();
+                var categories = (await _categories.GetAll()).OrderBy(cat=>cat.CategoryName);
                 foreach (var cat in categories)
                 {
                     var categoryImage = images.FirstOrDefault(img => img.Image_Srl == cat.Image_Srl);
@@ -67,7 +67,7 @@ namespace Central_Service.Service
                     }
                 }
 
-                var featuredProducts = (await _products.GetAll()).Where(prd => prd.IsFeatured);
+                var featuredProducts = (await _products.GetAll()).Where(prd => prd.IsFeatured).OrderBy(prd=>prd.Product_Name);
                 foreach (var product in featuredProducts)
                 {
                     var productImage = images.FirstOrDefault(img => img.Image_Srl == product.Image_Srl);
@@ -95,6 +95,54 @@ namespace Central_Service.Service
             {
                 Logger.LogInformation($"Method name: {nameof(HomePageData)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify<Exception>()}");
                 return null;
+            }
+            return output;
+        }
+        public async Task<SearchModel> GetSeachResult( string baseUrl, string category, string searchQuery )
+        {
+            var output = new SearchModel();
+            var images = await _images.GetAll();
+            var selectedCategory = (await _categories.Find(cat=>cat.CategoryName == category)).FirstOrDefault();
+            if (selectedCategory != null)
+            {
+                var products = (await _products.Find(prd=>prd.Category_Id == selectedCategory.Category_Id && prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()))).OrderBy(prd=>prd.Product_Name);
+                output.CategoryId = selectedCategory.Category_Id;
+                output.CategoryName = selectedCategory.CategoryName;
+                output.Result = products.Select(ex=> new ProductDto {
+                    Product_Id = ex.Product_Id,
+                    Product_Name = ex.Product_Name,
+                    Category_Id = ex.Category_Id,
+                    Image_Url = new Uri(new Uri(baseUrl), $"/Images/{ex.Image_Srl}{images.Where(img=>img.Image_Srl == ex.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString(),
+                    IsVeg = ex.IsVeg,
+                    IsBestSeller = ex.IsBestSeller,
+                    StockCount = ex.StockCount,
+                    Rating = ex.Reviews,
+                    IsFeatured = ex.IsFeatured,
+                    Price = ex.Price
+                }).ToList<ProductDto>();
+            }
+            else if (category.ToLower() == "all")
+            {
+                var products = await _products.Find(prd => prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()));
+                output.CategoryId = 0;
+                output.CategoryName = "All";
+                output.Result = products.Select(ex => new ProductDto
+                {
+                    Product_Id = ex.Product_Id,
+                    Product_Name = ex.Product_Name,
+                    Category_Id = ex.Category_Id,
+                    Image_Url = new Uri(new Uri(baseUrl), $"/Images/{ex.Image_Srl}{images.Where(img => img.Image_Srl == ex.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString(),
+                    IsVeg = ex.IsVeg,
+                    IsBestSeller = ex.IsBestSeller,
+                    StockCount = ex.StockCount,
+                    Rating = ex.Reviews,
+                    IsFeatured = ex.IsFeatured,
+                    Price = ex.Price
+                }).ToList<ProductDto>();
+            }
+            else
+            {
+                output = null;
             }
             return output;
         }
