@@ -11,11 +11,14 @@ namespace Central_Service.Model
         public List<string> CarouselUrls { get; set; } = new List<string>();
         public List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
         public List<ProductDto> FeaturedProducts { get; set; } = new List<ProductDto>();
+        public List<string> Label { get; set; } = new List<string>();
+        public string DefaultSearchBanner {  get; set; } = string.Empty;
     }
     public class SearchModel
     {
         public string CategoryName { get; set; } = string.Empty;
         public int CategoryId { get; set; }
+        public string CategoryImageUrl { get; set; } = string.Empty;
         public List<ProductDto> Result { get; set; } = new List<ProductDto>();
     }
     public class CategoryDto
