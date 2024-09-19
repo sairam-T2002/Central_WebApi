@@ -88,28 +88,35 @@ namespace Central_Service.Service
         public async Task<SearchModel> SeachResult( string baseUrl, string category, string searchQuery )
         {
             var output = new SearchModel();
-            var images = await _images.GetAll();
-            var baseUri = new Uri(baseUrl);
-            var selectedCategory = (await _categories.Find(cat=>cat.CategoryName == category)).FirstOrDefault();
-            if (selectedCategory != null)
+            try
             {
-                var products = (await _products.Find(prd=>prd.Category_Id == selectedCategory.Category_Id && prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()))).OrderBy(prd=>prd.Product_Name);
-                output.CategoryId = selectedCategory.Category_Id;
-                output.CategoryName = selectedCategory.CategoryName;
-                output.CategoryImageUrl = new Uri(baseUri, $"/Images/{selectedCategory.Image_Srl}{images.Where(img => img.Image_Srl == selectedCategory.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString();
-                
-                output.Result = products.Select(ex => _factory.BuildProductDto(ex, new Uri(baseUri, $"/Images/{ex.Image_Srl}{images.Where(img => img.Image_Srl == ex.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString())).ToList<ProductDto>();
+                var images = await _images.GetAll();
+                var baseUri = new Uri(baseUrl);
+                var selectedCategory = (await _categories.Find(cat => cat.CategoryName == category)).FirstOrDefault();
+                if (selectedCategory != null)
+                {
+                    var products = (await _products.Find(prd => prd.Category_Id == selectedCategory.Category_Id && prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()))).OrderBy(prd => prd.Product_Name);
+                    output.CategoryId = selectedCategory.Category_Id;
+                    output.CategoryName = selectedCategory.CategoryName;
+                    output.CategoryImageUrl = new Uri(baseUri, $"/Images/{selectedCategory.Image_Srl}{images.Where(img => img.Image_Srl == selectedCategory.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString();
+
+                    output.Result = products.Select(ex => _factory.BuildProductDto(ex, new Uri(baseUri, $"/Images/{ex.Image_Srl}{images.Where(img => img.Image_Srl == ex.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString())).ToList<ProductDto>();
+                }
+                else if (category.ToLower() == "all")
+                {
+                    var products = await _products.Find(prd => prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()));
+                    output.CategoryId = 0;
+                    output.CategoryName = "All";
+                    output.Result = products.Select(ex => _factory.BuildProductDto(ex, new Uri(new Uri(baseUrl), $"/Images/{ex.Image_Srl}{images.Where(img => img.Image_Srl == ex.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString())).ToList<ProductDto>();
+                }
+                else
+                {
+                    output = null;
+                }
             }
-            else if (category.ToLower() == "all")
+            catch(Exception ex)
             {
-                var products = await _products.Find(prd => prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()));
-                output.CategoryId = 0;
-                output.CategoryName = "All";
-                output.Result = products.Select(ex => _factory.BuildProductDto(ex, new Uri(new Uri(baseUrl), $"/Images/{ex.Image_Srl}{images.Where(img => img.Image_Srl == ex.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString())).ToList<ProductDto>();
-            }
-            else
-            {
-                output = null;
+                Logger.LogInformation($"Method name: {nameof(SeachResult)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify<Exception>()}");
             }
             return output;
         }

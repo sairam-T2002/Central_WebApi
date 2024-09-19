@@ -37,6 +37,7 @@ namespace Central_Service.Model
         public bool IsBestSeller { get; set; }
         public int StockCount { get; set; }
         public double Rating { get; set; }
+        public int  RatingCount { get; set; }
         public bool IsFeatured { get; set; }
         public int Price { get; set; }
     }

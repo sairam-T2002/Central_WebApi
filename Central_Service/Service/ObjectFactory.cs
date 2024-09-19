@@ -22,7 +22,8 @@ namespace Central_Service.Service
                 IsVeg = product.IsVeg,
                 IsBestSeller = product.IsBestSeller,
                 StockCount = product.StockCount,
-                Rating = product.Reviews,
+                Rating = product.Rating,
+                RatingCount = product.RatingCount,
                 IsFeatured = product.IsFeatured,
                 Price = product.Price,
             };

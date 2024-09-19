@@ -28,7 +28,9 @@ namespace Repository_DAL_.Model
 
         [Range(0, 5, ErrorMessage = "Reviews must be between 0 and 5.")]
         [RegularExpression(@"\d+(\.\d{1,2})?", ErrorMessage = "Reviews can have a maximum of 2 decimal places.")]
-        public double Reviews { get; set; }
+        public double Rating { get; set; }
+
+        public int RatingCount { get; set; }
 
         public int StockCount { get; set; }
 
