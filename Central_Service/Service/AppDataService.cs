@@ -120,5 +120,25 @@ namespace Central_Service.Service
             }
             return output;
         }
+        public async Task<int> SaveCart( List<ProductDto> Cart, string username )
+        {
+            try
+            {
+                var repo = GetService<IRepository<User>>();
+                if (repo == null) return -1;
+
+                User? user = (await repo.Find(usr=>usr.Usr_Nam == username)).FirstOrDefault();
+                if(user == null) return -1;
+
+                user.Cart = Cart.JSONStringify<List<ProductDto>>();
+                await repo.Update(user);
+                return 1;
+            }
+            catch(Exception ex)
+            {
+                Logger.LogInformation($"Method name: {nameof(SaveCart)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify<Exception>()}");
+            }
+            return 0;
+        }
     }
 }

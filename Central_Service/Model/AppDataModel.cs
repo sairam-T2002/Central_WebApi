@@ -40,5 +40,6 @@ namespace Central_Service.Model
         public int  RatingCount { get; set; }
         public bool IsFeatured { get; set; }
         public int Price { get; set; }
+        public int Quantity {  get; set; }
     }
 }

@@ -50,7 +50,7 @@ namespace Central_WebApi.Controllers
                 var accessToken = _token.GenerateAccessToken(cred.Username, _configuration);
                 var refreshToken = _token.GenerateRefreshToken();
                 await _service.SaveRefreshToken(cred.Username, refreshToken).ConfigureAwait(false); ;
-                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Username = usr.Usr_Nam });
             }
             return Unauthorized("No user was found");
         }

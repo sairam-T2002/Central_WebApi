@@ -11,6 +11,7 @@ namespace Repository_DAL_.Model
     {
         [Key]
         public int Id { get; set; }
+
         public string Label { get; set; }
     }
 }
