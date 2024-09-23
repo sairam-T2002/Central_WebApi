@@ -85,6 +85,7 @@ namespace Central_Service.Service
             }
             return output;
         }
+
         public async Task<SearchModel> SeachResult( string baseUrl, string category, string searchQuery )
         {
             var output = new SearchModel();
@@ -120,6 +121,7 @@ namespace Central_Service.Service
             }
             return output;
         }
+
         public async Task<int> SaveCart( List<ProductDto> Cart, string username )
         {
             try

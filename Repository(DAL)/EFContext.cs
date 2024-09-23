@@ -14,5 +14,6 @@ namespace Repository_DAL_
         public DbSet<Image> Images { get; set; }
         public DbSet<ControlMaster> ControlMaster { get; set; }
         public DbSet<Label> Labels { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
     }
 }

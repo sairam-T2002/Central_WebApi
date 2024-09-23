@@ -37,7 +37,7 @@ namespace Central_Service.Service
             try
             {
                 User temp = user.DeepClone<User>();
-                var usrs = await _user.Find(x => x.Usr_Nam == temp.Usr_Nam || x.E_Mail == temp.E_Mail);
+                var usrs = await _user.Find(x => x.Usr_Nam == temp.Usr_Nam || x.E_Mail == temp.Usr_Nam);
                 var usr = usrs.FirstOrDefault();
                 if (usr != null)
                 {
@@ -49,6 +49,9 @@ namespace Central_Service.Service
                 }
 
                 temp.Pwd = BCrypt.Net.BCrypt.HashPassword(temp.Pwd);
+                temp.CreateDate = DateTime.Now;
+                temp.ModifiedDate = DateTime.Now;
+                temp.LastSeen = DateTime.Now;
 
                 await _user.Add(temp);
                 return 1;
@@ -67,6 +70,7 @@ namespace Central_Service.Service
             if (usr != null)
             {
                 usr.RefreshToken = refreshToken;
+                usr.LastSeen = DateTime.Now;
                 await _user.Update(usr);
             }
         }

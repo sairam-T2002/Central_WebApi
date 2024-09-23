@@ -12,7 +12,13 @@ namespace Repository_DAL_.Model
     {
         [Key]
         public int Label_Id { get; set; }
+
         public string Labeld { get; set; }
+
         public string Label_Description { get; set; }
+
+        public DateTime CreateDate { get; set; } = DateTime.Now;
+
+        public DateTime ModifiedDate { get; set; } = DateTime.Now;
     }
 }

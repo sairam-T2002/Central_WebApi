@@ -23,5 +23,9 @@ namespace Repository_DAL_.Model
         public int UserId { get; set; }
 
         public virtual User User { get; set; }
+
+        public DateTime CreateDate { get; set; } = DateTime.Now;
+
+        public DateTime ModifiedDate { get; set; } = DateTime.Now;
     }
 }
