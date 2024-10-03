@@ -24,6 +24,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Central_Service\Central_Service.csproj" />
+		<ProjectReference Include="..\ExtensionMethods\ExtensionMethods.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -10,9 +10,9 @@ namespace Repository_DAL_.Model
 
         public string CategoryName { get; set; } = string.Empty;
 
-        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
 
-        public DateTime ModifiedDate { get; set; } = DateTime.Now;
+        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("Image")]
         public int Image_Srl { get; set; }

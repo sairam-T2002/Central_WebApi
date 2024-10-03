@@ -9,6 +9,8 @@ using System.Text;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Central_Service.JWT;
+using System.Dynamic;
+using ExtensionMethods;
 
 namespace Central_WebApi.Controllers
 {
@@ -52,6 +54,14 @@ namespace Central_WebApi.Controllers
                 await _service.SaveRefreshToken(cred.Username, refreshToken).ConfigureAwait(false); ;
                 return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Username = usr.Usr_Nam });
             }
+            dynamic flexibleObject = new ExpandoObject();
+
+            // Adding properties dynamically
+            flexibleObject.Name = "John Doe";
+            flexibleObject.Age = 30;
+            flexibleObject.IsEmployed = true;
+            ((IDictionary<string, object>)flexibleObject)["dynamicKey"] = "Hello";
+            string temp = (flexibleObject as object).JSONStringify<object>();
             return Unauthorized("No user was found");
         }
 

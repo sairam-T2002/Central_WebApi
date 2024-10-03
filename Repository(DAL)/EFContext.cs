@@ -15,5 +15,8 @@ namespace Repository_DAL_
         public DbSet<ControlMaster> ControlMaster { get; set; }
         public DbSet<Label> Labels { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+
+
+        public DbSet<ApiLog> ApiLog { get; set; }
     }
 }

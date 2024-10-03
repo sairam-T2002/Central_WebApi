@@ -49,9 +49,8 @@ namespace Central_Service.Service
                 }
 
                 temp.Pwd = BCrypt.Net.BCrypt.HashPassword(temp.Pwd);
-                temp.CreateDate = DateTime.Now;
-                temp.ModifiedDate = DateTime.Now;
-                temp.LastSeen = DateTime.Now;
+                temp.CreateDate = DateOnly.FromDateTime(DateTime.UtcNow);
+                temp.ModifiedDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
                 await _user.Add(temp);
                 return 1;
@@ -70,7 +69,6 @@ namespace Central_Service.Service
             if (usr != null)
             {
                 usr.RefreshToken = refreshToken;
-                usr.LastSeen = DateTime.Now;
                 await _user.Update(usr);
             }
         }

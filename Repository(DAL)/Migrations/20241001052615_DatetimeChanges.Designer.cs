@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Repository_DAL_;
@@ -11,9 +12,11 @@ using Repository_DAL_;
 namespace Repository_DAL_.Migrations
 {
     [DbContext(typeof(EFContext))]
-    partial class EFContextModelSnapshot : ModelSnapshot
+    [Migration("20241001052615_DatetimeChanges")]
+    partial class DatetimeChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,34 +24,6 @@ namespace Repository_DAL_.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Repository_DAL_.Model.ApiLog", b =>
-                {
-                    b.Property<int>("srl")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("srl"));
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Exception")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("log")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("log_origin")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("srl");
-
-                    b.ToTable("ApiLog");
-                });
 
             modelBuilder.Entity("Repository_DAL_.Model.Category", b =>
                 {
@@ -265,6 +240,9 @@ namespace Repository_DAL_.Migrations
                     b.Property<string>("E_Mail")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("LastSeen")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateOnly>("ModifiedDate")
                         .HasColumnType("date");

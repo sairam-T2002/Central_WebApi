@@ -17,8 +17,8 @@ namespace Repository_DAL_.Model
 
         public string Label_Description { get; set; }
 
-        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
 
-        public DateTime ModifiedDate { get; set; } = DateTime.Now;
+        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
     }
 }

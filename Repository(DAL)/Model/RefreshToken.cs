@@ -24,8 +24,8 @@ namespace Repository_DAL_.Model
 
         public virtual User User { get; set; }
 
-        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
 
-        public DateTime ModifiedDate { get; set; } = DateTime.Now;
+        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
     }
 }

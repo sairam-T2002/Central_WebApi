@@ -24,6 +24,10 @@ namespace Central_Service
 
 
 
+            services.AddScoped<IApiLog, ApiLogService>();
+
+
+
         }
     }
 }

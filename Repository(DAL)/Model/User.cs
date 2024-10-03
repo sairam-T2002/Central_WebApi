@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace Repository_DAL_.Model
 {
@@ -17,10 +18,8 @@ namespace Repository_DAL_.Model
 
         public string? Cart { get; set; }
 
-        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateOnly CreateDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
-        public DateTime ModifiedDate { get; set; } = DateTime.Now;
-
-        public DateTime LastSeen { get; set; } = DateTime.Now;
+        public DateOnly ModifiedDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     }
 }

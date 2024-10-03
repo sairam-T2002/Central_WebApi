@@ -44,6 +44,8 @@ namespace Central_Service.Service
         public async Task<AppDataModel> HomePageData( string baseUrl )
         {
             var output = new AppDataModel();
+            var dbLogger = GetService<IApiLog>();
+            List<ApiLog> log = new List<ApiLog>();
             try
             {
                 Uri baseUri = new Uri(baseUrl);
@@ -77,11 +79,29 @@ namespace Central_Service.Service
                         output.FeaturedProducts.Add(_factory.BuildProductDto(product,imageUrl));
                     }
                 }
+                log.Add(new ApiLog
+                {
+                    log_origin = $"AppDataService.{nameof(HomePageData)}-{LogUtil.Response}",
+                    log = output.JSONStringify<AppDataModel>(),
+                    Exception = string.Empty,
+                    DateTime = DateTime.UtcNow
+                });
             }
             catch (Exception ex)
             {
                 Logger.LogInformation($"Method name: {nameof(HomePageData)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify<Exception>()}");
-                return null;
+                log.Add(new ApiLog
+                {
+                    log_origin = $"AppDataService.{nameof(HomePageData)}-{LogUtil.Response}",
+                    log = ex.JSONStringify<Exception>(),
+                    Exception = ex.Message,
+                    DateTime = DateTime.UtcNow
+                });
+                output =  null;
+            }
+            finally
+            {
+                dbLogger.AddDbLog(log);
             }
             return output;
         }
@@ -89,6 +109,8 @@ namespace Central_Service.Service
         public async Task<SearchModel> SeachResult( string baseUrl, string category, string searchQuery )
         {
             var output = new SearchModel();
+            var dbLogger = GetService<IApiLog>();
+            List<ApiLog> log = new List<ApiLog>();
             try
             {
                 var images = await _images.GetAll();
@@ -114,10 +136,35 @@ namespace Central_Service.Service
                 {
                     output = null;
                 }
+                log.Add(new ApiLog
+                {
+                    log_origin = $"AppDataService.{nameof(SeachResult)}-{LogUtil.Response}",
+                    log = output.JSONStringify<SearchModel>(),
+                    Exception = string.Empty,
+                    DateTime = DateTime.UtcNow
+                });
+                log.Add(new ApiLog
+                {
+                    log_origin = $"AppDataService.{nameof(SeachResult)}-{LogUtil.Request}",
+                    log = $"GetSearchResults/{category}?searchquery={searchQuery}",
+                    Exception = string.Empty,
+                    DateTime = DateTime.UtcNow
+                });
             }
             catch(Exception ex)
             {
                 Logger.LogInformation($"Method name: {nameof(SeachResult)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify<Exception>()}");
+                log.Add(new ApiLog
+                {
+                    log_origin = $"AppDataService.{nameof(SeachResult)}-{LogUtil.Exception}",
+                    log = ex.JSONStringify<Exception>(),
+                    Exception = ex.Message,
+                    DateTime = DateTime.UtcNow
+                });
+            }
+            finally
+            {
+                dbLogger.AddDbLog(log);
             }
             return output;
         }
