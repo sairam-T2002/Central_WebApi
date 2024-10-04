@@ -20,10 +20,11 @@ namespace Central_Service.Service
         private readonly IRepository<Product> _products;
         private readonly IRepository<Image> _images;
         private readonly IRepository<Label> _labels;
+        private readonly IRepository<ApiLog> _logService;
         private readonly EFContext _dbcontext;
         private readonly IObjectFactory _factory;
 
-        public AppDataService( EFContext dbcontext,ILogger<AppDataService> logger, IRepository<Category> categories, IRepository<Product> products, IRepository<Image> images, IRepository<Label> labels, IServiceProvider serviceProvider, IObjectFactory factory ) : base(logger, serviceProvider)
+        public AppDataService( EFContext dbcontext,ILogger<AppDataService> logger, IRepository<Category> categories, IRepository<Product> products, IRepository<Image> images, IRepository<Label> labels, IRepository<ApiLog> logService, IServiceProvider serviceProvider, IObjectFactory factory ) : base(logger, serviceProvider)
         {
             _categories = categories;
             _products = products;
@@ -31,6 +32,23 @@ namespace Central_Service.Service
             _labels = labels;
             _dbcontext = dbcontext;
             _factory = factory;
+            _logService = logService;
+        }
+
+        private string BuildImageUrl( Uri baseUri, int imageSrl, Dictionary<int, string> imageDict )
+        {
+            return new Uri(baseUri, $"/Images/{imageSrl}{imageDict[imageSrl]}").ToString();
+        }
+
+        private async Task LogAsync( string methodName, string logType, string logMessage, string exception = "" )
+        {
+            await _logService.Add(new ApiLog
+            {
+                log_origin = $"AppDataService.{methodName}-{logType}",
+                log = logMessage,
+                Exception = exception,
+                DateTime = DateTime.UtcNow
+            });
         }
 
         public async Task<string> AppConfig()
@@ -44,127 +62,97 @@ namespace Central_Service.Service
         public async Task<AppDataModel> HomePageData( string baseUrl )
         {
             var output = new AppDataModel();
-            var dbLogger = GetService<IApiLog>();
-            List<ApiLog> log = new List<ApiLog>();
+            var baseUri = new Uri(baseUrl);
+
             try
             {
-                Uri baseUri = new Uri(baseUrl);
+                // Fetch all required data asynchronously
                 var images = await _images.GetAll();
-                var carouselImages = images.Where(img => img.IsCarousel);
-                var labels = (await _labels.GetAll()).OrderBy(ex=>ex.Label_Id);
-                var repo = GetService<IRepository<ControlMaster>>();
-                var control = (await repo.Find(x => x.id == 1))[0];
-                var defaultImage = images.Find(img=> img.Image_Srl == control.defaultSearchImg);
+                var labels = await _labels.GetAll();
+                var categories = await _categories.GetAll();
+                var featuredProducts = await _products.Find(prd => prd.IsFeatured);
+                var controls = await GetService<IRepository<ControlMaster>>().Find(x => x.id == 1);
 
-                output.DefaultSearchBanner = new Uri(baseUri,$"/Images/{defaultImage?.Image_Srl}{defaultImage?.Image_Type}").ToString();
-                output.Label.AddRange(labels.Select(lb=>lb.Labeld));
-                output.CarouselUrls.AddRange(carouselImages.Select(img=> new Uri(baseUri, $"/Images/{img.Image_Srl}{img.Image_Type}").ToString()));
-                var categories = (await _categories.GetAll()).OrderBy(cat=>cat.CategoryName);
-                foreach (var cat in categories)
-                {
-                    var categoryImage = images.FirstOrDefault(img => img.Image_Srl == cat.Image_Srl);
-                    if (categoryImage != null)
-                    {
-                        var imageUrl = new Uri(baseUri, $"/Images/{cat.Image_Srl}{categoryImage.Image_Type}").ToString();
-                        output.Categories.Add(_factory.BuildCategoryDto(cat,imageUrl));
-                    }
-                }
-                var featuredProducts = (await _products.Find(prd=>prd.IsFeatured)).OrderBy(prd=>prd.Product_Name);
-                foreach (var product in featuredProducts)
-                {
-                    var productImage = images.FirstOrDefault(img => img.Image_Srl == product.Image_Srl);
-                    if (productImage != null)
-                    {
-                        var imageUrl = new Uri(baseUri, $"/Images/{product.Image_Srl}{productImage.Image_Type}").ToString();
-                        output.FeaturedProducts.Add(_factory.BuildProductDto(product,imageUrl));
-                    }
-                }
-                log.Add(new ApiLog
-                {
-                    log_origin = $"AppDataService.{nameof(HomePageData)}-{LogUtil.Response}",
-                    log = output.JSONStringify<AppDataModel>(),
-                    Exception = string.Empty,
-                    DateTime = DateTime.UtcNow
-                });
+
+                var imageDict = images.ToDictionary(img => img.Image_Srl, img => img.Image_Type);
+
+                // Process control
+                var control = controls.FirstOrDefault();
+                output.DefaultSearchBanner = BuildImageUrl(baseUri, control?.defaultSearchImg ?? 0, imageDict);
+
+                // Process labels
+                output.Label = labels.OrderBy(ex => ex.Label_Id).Select(lb => lb.Labeld).ToList();
+
+                // Process carousel images
+                output.CarouselUrls = images.Where(img => img.IsCarousel)
+                                            .Select(img => BuildImageUrl(baseUri, img.Image_Srl, imageDict))
+                                            .ToList();
+
+                // Process categories
+                output.Categories = categories
+                    .OrderBy(cat => cat.CategoryName)
+                    .Select(cat => _factory.BuildCategoryDto(cat, BuildImageUrl(baseUri, cat.Image_Srl, imageDict)))
+                    .Where(dto => dto.Image_Url != null)
+                    .ToList();
+
+                // Process featured products
+                output.FeaturedProducts = featuredProducts
+                    .OrderBy(prd => prd.Product_Name)
+                    .Select(product => _factory.BuildProductDto(product, BuildImageUrl(baseUri, product.Image_Srl, imageDict)))
+                    .Where(dto => dto.Image_Url != null)
+                    .ToList();
+
+                //await LogAsync(nameof(HomePageData), LogUtil.Response, output.JSONStringify());
             }
             catch (Exception ex)
             {
-                Logger.LogInformation($"Method name: {nameof(HomePageData)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify<Exception>()}");
-                log.Add(new ApiLog
-                {
-                    log_origin = $"AppDataService.{nameof(HomePageData)}-{LogUtil.Response}",
-                    log = ex.JSONStringify<Exception>(),
-                    Exception = ex.Message,
-                    DateTime = DateTime.UtcNow
-                });
-                output =  null;
+                Logger.LogInformation($"Method name: {nameof(HomePageData)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify()}");
+                //await LogAsync(nameof(HomePageData), LogUtil.Response, ex.JSONStringify(), ex.Message);
+                output = null;
             }
-            finally
-            {
-                dbLogger.AddDbLog(log);
-            }
+
             return output;
         }
+
+        
 
         public async Task<SearchModel> SeachResult( string baseUrl, string category, string searchQuery )
         {
             var output = new SearchModel();
-            var dbLogger = GetService<IApiLog>();
-            List<ApiLog> log = new List<ApiLog>();
             try
             {
                 var images = await _images.GetAll();
+                var selectedCategory =  (await _categories.Find(cat => cat.CategoryName == category)).FirstOrDefault();
+
                 var baseUri = new Uri(baseUrl);
-                var selectedCategory = (await _categories.Find(cat => cat.CategoryName == category)).FirstOrDefault();
+                var imageDict = images.ToDictionary(img => img.Image_Srl, img => img.Image_Type);
+
                 if (selectedCategory != null)
                 {
+                    // Products in particular Category
                     var products = (await _products.Find(prd => prd.Category_Id == selectedCategory.Category_Id && prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()))).OrderBy(prd => prd.Product_Name);
                     output.CategoryId = selectedCategory.Category_Id;
                     output.CategoryName = selectedCategory.CategoryName;
-                    output.CategoryImageUrl = new Uri(baseUri, $"/Images/{selectedCategory.Image_Srl}{images.Where(img => img.Image_Srl == selectedCategory.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString();
+                    output.CategoryImageUrl = BuildImageUrl(baseUri, selectedCategory.Image_Srl, imageDict);
 
-                    output.Result = products.Select(ex => _factory.BuildProductDto(ex, new Uri(baseUri, $"/Images/{ex.Image_Srl}{images.Where(img => img.Image_Srl == ex.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString())).ToList<ProductDto>();
+                    output.Result = products.Select(ex => _factory.BuildProductDto(ex, BuildImageUrl(baseUri, ex.Image_Srl, imageDict))).ToList();
                 }
                 else if (category.ToLower() == "all")
                 {
+                    // Products in Every Category
                     var products = await _products.Find(prd => prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()));
                     output.CategoryId = 0;
                     output.CategoryName = "All";
-                    output.Result = products.Select(ex => _factory.BuildProductDto(ex, new Uri(new Uri(baseUrl), $"/Images/{ex.Image_Srl}{images.Where(img => img.Image_Srl == ex.Image_Srl).FirstOrDefault()?.Image_Type ?? ""}").ToString())).ToList<ProductDto>();
+                    output.Result = products.Select(ex => _factory.BuildProductDto(ex, BuildImageUrl(baseUri, ex.Image_Srl, imageDict))).ToList();
                 }
                 else
                 {
                     output = null;
                 }
-                log.Add(new ApiLog
-                {
-                    log_origin = $"AppDataService.{nameof(SeachResult)}-{LogUtil.Response}",
-                    log = output.JSONStringify<SearchModel>(),
-                    Exception = string.Empty,
-                    DateTime = DateTime.UtcNow
-                });
-                log.Add(new ApiLog
-                {
-                    log_origin = $"AppDataService.{nameof(SeachResult)}-{LogUtil.Request}",
-                    log = $"GetSearchResults/{category}?searchquery={searchQuery}",
-                    Exception = string.Empty,
-                    DateTime = DateTime.UtcNow
-                });
             }
             catch(Exception ex)
             {
-                Logger.LogInformation($"Method name: {nameof(SeachResult)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify<Exception>()}");
-                log.Add(new ApiLog
-                {
-                    log_origin = $"AppDataService.{nameof(SeachResult)}-{LogUtil.Exception}",
-                    log = ex.JSONStringify<Exception>(),
-                    Exception = ex.Message,
-                    DateTime = DateTime.UtcNow
-                });
-            }
-            finally
-            {
-                dbLogger.AddDbLog(log);
+                Logger.LogInformation($"Method name: {nameof(SeachResult)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify()}");
             }
             return output;
         }
@@ -179,13 +167,13 @@ namespace Central_Service.Service
                 User? user = (await repo.Find(usr=>usr.Usr_Nam == username)).FirstOrDefault();
                 if(user == null) return -1;
 
-                user.Cart = Cart.JSONStringify<List<ProductDto>>();
+                user.Cart = Cart.JSONStringify();
                 await repo.Update(user);
                 return 1;
             }
             catch(Exception ex)
             {
-                Logger.LogInformation($"Method name: {nameof(SaveCart)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify<Exception>()}");
+                Logger.LogInformation($"Method name: {nameof(SaveCart)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify()}");
             }
             return 0;
         }

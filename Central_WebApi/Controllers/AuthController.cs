@@ -51,17 +51,10 @@ namespace Central_WebApi.Controllers
             {
                 var accessToken = _token.GenerateAccessToken(cred.Username, _configuration);
                 var refreshToken = _token.GenerateRefreshToken();
+                var cart = usr?.Cart?.JSONParse<List<ProductDto>>() ?? new List<ProductDto>();
                 await _service.SaveRefreshToken(cred.Username, refreshToken).ConfigureAwait(false); ;
-                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Username = usr.Usr_Nam });
+                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Username = usr.Usr_Nam, Cart = cart });
             }
-            dynamic flexibleObject = new ExpandoObject();
-
-            // Adding properties dynamically
-            flexibleObject.Name = "John Doe";
-            flexibleObject.Age = 30;
-            flexibleObject.IsEmployed = true;
-            ((IDictionary<string, object>)flexibleObject)["dynamicKey"] = "Hello";
-            string temp = (flexibleObject as object).JSONStringify<object>();
             return Unauthorized("No user was found");
         }
 
@@ -78,19 +71,19 @@ namespace Central_WebApi.Controllers
             var usr = await _service.Signup(user).ConfigureAwait(false); ;
             if (usr == 1)
             {
-                return Ok("User Registered successfully");
+                return Ok(new {Status = true,Message = "User Registered successfully"});
             } 
             else if (usr == -1)
             {
-                return BadRequest("User already exists for the specified email");
+                return BadRequest(new { Status = false, Message = "User already exists for the specified email" });
             }
             else if (usr == -2)
             {
-                return BadRequest("User already exists for the specified username");
+                return BadRequest(new { Status = false, Message = "User already exists for the specified username" });
             }
             else
             {
-                return BadRequest("Invalid Parameters");
+                return BadRequest(new { Status = false, Message = "Invalid Credentials" });
             }
         }
 

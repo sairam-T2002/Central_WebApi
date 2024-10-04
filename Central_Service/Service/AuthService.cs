@@ -19,7 +19,7 @@ namespace Central_Service.Service
             _logger = logger;
         }
 
-        public async Task<User> Login( Login cred )
+        public async Task<User?> Login( Login cred )
         {
             var usrs = await _user.Find(x => x.Usr_Nam == cred.Username || x.E_Mail == cred.Username);
             var usr = usrs.FirstOrDefault();
@@ -73,7 +73,7 @@ namespace Central_Service.Service
             }
         }
 
-        public async Task<string> GetRefreshToken( string username )
+        public async Task<string?> GetRefreshToken( string username )
         {
             var usrs = await _user.Find(x => x.Usr_Nam == username);
             var usr = usrs.FirstOrDefault();
