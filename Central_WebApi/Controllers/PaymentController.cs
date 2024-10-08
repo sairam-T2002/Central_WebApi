@@ -1,5 +1,5 @@
 ﻿using Central_Service.Interface;
-using Central_Service.Model;
+using Central_Service.DTO;
 using Central_Service.Payment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

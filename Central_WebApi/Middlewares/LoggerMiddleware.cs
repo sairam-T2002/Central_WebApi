@@ -8,17 +8,20 @@ namespace Central_WebApi.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<LoggerMiddleware> _logger;
+        private readonly IConfiguration _configuration;
 
-        public LoggerMiddleware( RequestDelegate next, ILogger<LoggerMiddleware> logger )
+        public LoggerMiddleware( RequestDelegate next, ILogger<LoggerMiddleware> logger, IConfiguration configuration )
         {
             _next = next;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task InvokeAsync( HttpContext context )
         {
             var endpoint = context.GetEndpoint();
-            if (endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>() is ControllerActionDescriptor actionDescriptor)
+            var loggingFlag = _configuration.GetSection("DisableLogging").Value;
+            if (endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>() is ControllerActionDescriptor actionDescriptor && loggingFlag == "False")
             {
                 // Log action parameters from route
                 var parameters = actionDescriptor.Parameters;

@@ -20,6 +20,8 @@ namespace Repository_DAL_.Model
 
         public DateTime CreatedTime { get; set; }
 
+        public DateTime? ConfirmedTime { get; set; }
+
         public DateTime ExpireTime {  get; set; }
     }
 }

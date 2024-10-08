@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Central_Service.Interface
 {
-    public interface IReservation
+    public interface IReservationService
     {
+        //Task
     }
 }

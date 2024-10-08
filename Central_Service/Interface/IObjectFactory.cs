@@ -1,4 +1,4 @@
-﻿using Central_Service.Model;
+﻿using Central_Service.DTO;
 using Repository_DAL_.Model;
 using System;
 using System.Collections.Generic;

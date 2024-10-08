@@ -1,5 +1,5 @@
 ﻿using Repository_DAL_.Model;
-using Central_Service.Model;
+using Central_Service.DTO;
 
 namespace Central_Service.Interface
 {

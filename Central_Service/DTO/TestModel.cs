@@ -1,7 +1,7 @@
 ﻿
 using Central_Service.Payment;
 
-namespace Central_Service.Model
+namespace Central_Service.DTO
 {
     public class TestModel
     {

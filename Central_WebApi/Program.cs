@@ -9,16 +9,7 @@ using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File("logs/app.log", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
 
-builder.Host.UseSerilog(); // Use Serilog for logging
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -70,6 +61,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+var logginFlag = builder.Configuration["EnableLogging"];
+if(logginFlag == "False")
+{
+    // Configure Serilog
+    Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .WriteTo.File("logs/app.log", rollingInterval: RollingInterval.Day)
+        .CreateLogger();
+
+    builder.Host.UseSerilog(); // Use Serilog for logging
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -94,7 +100,10 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseCors("AllowAll");
-app.UseActionLogging();
+if (logginFlag == "False")
+{
+    app.UseActionLogging();
+}
 //app.UseTokenValidation();
 app.UseHttpsRedirection();
 app.UseAuthentication();

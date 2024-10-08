@@ -1,5 +1,5 @@
 ﻿
-namespace Central_Service.Model
+namespace Central_Service.DTO
 {
     public class SessionInfo
     {

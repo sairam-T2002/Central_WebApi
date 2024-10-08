@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Central_Service.Model
+namespace Central_Service.DTO
 {
     public static class LogUtil
     {

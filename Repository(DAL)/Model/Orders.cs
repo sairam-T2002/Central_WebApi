@@ -19,5 +19,9 @@ namespace Repository_DAL_.Model
         public string Reservation_Id { get; set; }
 
         public virtual Reservation Reservation { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime? CancellendAt { get; set; } = DateTime.UtcNow;
     }
 }

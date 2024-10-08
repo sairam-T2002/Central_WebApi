@@ -18,8 +18,12 @@ namespace Central_Service
             services.AddScoped<ITestService, TestService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPaymentService, PaymentService>(); 
-            services.AddScoped<IAppDataService, AppDataService>(); 
+            services.AddScoped<IAppDataService, AppDataService>();
+            services.AddScoped<IReservationService, ReservationService>();
+
+
             services.AddScoped<TokenHelper>();
+
             services.AddTransient<IObjectFactory, Service.ObjectFactory>();
 
 

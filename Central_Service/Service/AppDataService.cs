@@ -1,6 +1,6 @@
 ﻿using Central_Service.Core;
 using Central_Service.Interface;
-using Central_Service.Model;
+using Central_Service.DTO;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Repository_DAL_.Model;
@@ -59,9 +59,9 @@ namespace Central_Service.Service
             return mapkey ?? "";
         }
 
-        public async Task<AppDataModel> HomePageData( string baseUrl )
+        public async Task<AppDataDTO> HomePageData( string baseUrl )
         {
-            var output = new AppDataModel();
+            var output = new AppDataDTO();
             var baseUri = new Uri(baseUrl);
 
             try

@@ -1,4 +1,4 @@
-﻿using Central_Service.Model;
+﻿using Central_Service.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace Central_Service.Interface
 {
     public interface IAppDataService
     {
-        Task<AppDataModel> HomePageData(string webroot);
+        Task<AppDataDTO> HomePageData(string webroot);
         Task<SearchModel> SeachResult( string baseUrl, string category, string searchQuery);
         Task<string> AppConfig();
         Task<int> SaveCart(List<ProductDto> Cart, string username);
