@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Central_Service.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Central_Service.Interface
 {
     public interface IReservationService
     {
-        //Task
+        Task<bool> ReserveCart( List<ProductDto> Cart, string userName);
     }
 }

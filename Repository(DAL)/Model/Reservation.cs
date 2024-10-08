@@ -15,6 +15,8 @@ namespace Repository_DAL_.Model
 
         
         public string Reservation_Id { get; set; } = string.Empty;
+        [ForeignKey("Users")]
+        public string Id { get; set; } = string.Empty;
 
         public string Cart { get; set; } = string.Empty;
 
