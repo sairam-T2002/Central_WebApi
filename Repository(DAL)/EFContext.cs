@@ -16,6 +16,7 @@ public partial class EFContext : DbContext
     public DbSet<Label> Labels { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Orders> Orders { get; set; }
+    public DbSet<Address> Address { get; set; }
 
 
     public DbSet<ApiLog> ApiLog { get; set; }
