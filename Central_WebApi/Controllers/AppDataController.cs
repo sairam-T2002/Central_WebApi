@@ -3,75 +3,83 @@ using Central_Service.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Central_WebApi.Controllers
+namespace Central_WebApi.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
+public class AppDataController : ControllerBase
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AppDataController : ControllerBase
+    #region Private Declarations
+
+    private readonly IAppDataService _service;
+
+    #endregion
+
+    #region Constructor
+
+    public AppDataController( IAppDataService service )
     {
-        private readonly IAppDataService _service;
-        private readonly IWebHostEnvironment _env;
-        #region Constructor
-        public AppDataController( IAppDataService service, IWebHostEnvironment env )
+        _service = service;
+    }
+
+    #endregion
+
+    #region Actions
+
+    [HttpGet("GetHomePageData")]
+    public async Task<IActionResult> GetHomePageData()
+    {
+        var request = HttpContext.Request;
+        var url = $"{request.Scheme}://{request.Host}";
+        var result = await _service.HomePageData(url).ConfigureAwait(false);
+        if (result == null)
         {
-            _service = service;
-            _env = env;
+            return NotFound();
         }
-        #endregion
+        return Ok(result);
+    }
 
-        [HttpGet("GetHomePageData")]
-        public async Task<IActionResult> GetHomePageData()
+    [HttpGet("GetSearchResults/{category}")]
+    public async Task<IActionResult> GetSearchResults( string category, string? searchquery = null )
+    {
+        var request = HttpContext.Request;
+        var url = $"{request.Scheme}://{request.Host}";
+
+        var result = await _service.SeachResult(url, category, searchquery ?? "").ConfigureAwait(false);
+
+        if (result == null)
         {
-            var request = HttpContext.Request;
-            var url = $"{request.Scheme}://{request.Host}";
-            var result = await _service.HomePageData(url).ConfigureAwait(false);
-            if(result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
-
-        [HttpGet("GetSearchResults/{category}")]
-        public async Task<IActionResult> GetSearchResults( string category, string? searchquery = null )
-        {
-            var request = HttpContext.Request;
-            var url = $"{request.Scheme}://{request.Host}";
-
-            var result = await _service.SeachResult(url, category, searchquery ?? "").ConfigureAwait(false);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return NotFound();
         }
 
-        [HttpGet("GetAppConfig")]
-        public async Task<IActionResult> GetAppConfig()
-        {
-            var result = await _service.AppConfig().ConfigureAwait(false);
-            return Ok(new { googleMapsApiKey = result });
-        }
+        return Ok(result);
+    }
 
-        [HttpPost("SaveCart")]
-        public async Task<IActionResult> SaveCart(List<ProductDto> cart, int userId)
+    [HttpGet("GetAppConfig")]
+    public async Task<IActionResult> GetAppConfig()
+    {
+        var result = await _service.AppConfig().ConfigureAwait(false);
+        return Ok(new { googleMapsApiKey = result });
+    }
+
+    [HttpPost("SaveCart")]
+    public async Task<IActionResult> SaveCart( List<ProductDto> cart, int userId )
+    {
+        var result = await _service.SaveCart(cart, userId).ConfigureAwait(false);
+        if (result == 1)
         {
-            var result = await _service.SaveCart(cart, userId).ConfigureAwait(false);
-            if(result == 1)
-            {
-                return Ok(new { Status=true,Message="Cart saved"});
-            }
-            else if( result == -1)
-            {
-                return NotFound(new {Status=false,Message="Invalid User"});
-            }
-            else
-            {
-                return NotFound(new { Status = false, Message = "Server Exception" });
-            }
+            return Ok(new { Status = true, Message = "Cart saved" });
+        }
+        else if (result == -1)
+        {
+            return NotFound(new { Status = false, Message = "Invalid User" });
+        }
+        else
+        {
+            return NotFound(new { Status = false, Message = "Server Exception" });
         }
     }
+
+    #endregion
 }

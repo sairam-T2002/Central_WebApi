@@ -1,9 +1,8 @@
 ﻿using Central_Service.DTO;
 
-namespace Central_Service.Interface
+namespace Central_Service.Interface;
+
+public interface IReservationService
 {
-    public interface IReservationService
-    {
-        Task<bool> ReserveCart( List<ProductDto> Cart, int userId);
-    }
+    Task<bool> ReserveCart( List<ProductDto> Cart, int userId );
 }

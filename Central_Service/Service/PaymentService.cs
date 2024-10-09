@@ -3,8 +3,8 @@ using Central_Service.Interface;
 using Central_Service.Payment;
 using Microsoft.Extensions.Logging;
 
-namespace Central_Service.Service
-{
+namespace Central_Service.Service;
+
     public class PaymentService : ServiceBase, IPaymentService
     {
         public PaymentService(ILogger<PaymentService> logger, IServiceProvider serviceProvider ) : base(logger, serviceProvider)
@@ -27,4 +27,3 @@ namespace Central_Service.Service
             return paymentDTO;
         }
     }
-}

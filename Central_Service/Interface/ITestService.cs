@@ -1,7 +1,6 @@
-﻿namespace Central_Service.Interface
+﻿namespace Central_Service.Interface;
+
+public interface ITestService
 {
-    public interface ITestService
-    {
-        string TestMethod();
-    }
+    string TestMethod();
 }

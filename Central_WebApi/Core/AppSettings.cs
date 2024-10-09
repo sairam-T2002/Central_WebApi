@@ -1,6 +1,5 @@
-﻿namespace Central_WebApi.Core
+﻿namespace Central_WebApi.Core;
+
+public class AppSettings
 {
-    public class AppSettings
-    {
-    }
 }
