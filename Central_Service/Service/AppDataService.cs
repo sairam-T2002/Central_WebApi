@@ -89,15 +89,15 @@ public class AppDataService : ServiceBase, IAppDataService
                                         .Select(img => BuildImageUrl(baseUri, img.Image_Srl, imageDict))
                                         .ToList();
             output.Categories = categories
-                .OrderBy(cat => cat.CategoryName)
-                .Select(cat => _factory.BuildCategoryDto(cat, BuildImageUrl(baseUri, cat.Image_Srl, imageDict)))
-                .Where(dto => dto.Image_Url != null)
-                .ToList();
+                                        .OrderBy(cat => cat.CategoryName)
+                                        .Select(cat => _factory.BuildCategoryDto(cat, BuildImageUrl(baseUri, cat.Image_Srl, imageDict)))
+                                        .Where(dto => dto.Image_Url != null)
+                                        .ToList();
             output.FeaturedProducts = featuredProducts
-                .OrderBy(prd => prd.Product_Name)
-                .Select(product => _factory.BuildProductDto(product, BuildImageUrl(baseUri, product.Image_Srl, imageDict)))
-                .Where(dto => dto.Image_Url != null)
-                .ToList();
+                                        .OrderBy(prd => prd.Product_Name)
+                                        .Select(product => _factory.BuildProductDto(product, BuildImageUrl(baseUri, product.Image_Srl, imageDict)))
+                                        .Where(dto => dto.Image_Url != null)
+                                        .ToList();
 
             //await LogAsync(nameof(HomePageData), LogUtil.Response, output.JSONStringify());
         }
