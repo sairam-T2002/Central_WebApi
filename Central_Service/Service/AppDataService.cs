@@ -2,15 +2,9 @@
 using Central_Service.Interface;
 using Central_Service.DTO;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using Repository_DAL_.Model;
 using Repository_DAL_;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ExtensionMethods;
-using Microsoft.EntityFrameworkCore;
 
 namespace Central_Service.Service
 {
@@ -67,12 +61,17 @@ namespace Central_Service.Service
             try
             {
                 // Fetch all required data asynchronously
-                var images = await _images.GetAll();
-                var labels = await _labels.GetAll();
-                var categories = await _categories.GetAll();
-                var featuredProducts = await _products.Find(prd => prd.IsFeatured);
-                var controls = await GetService<IRepository<ControlMaster>>().Find(x => x.id == 1);
-
+                var imagesTask = _images.GetAll();
+                var labelsTask = _labels.GetAll();
+                var categoriesTask = _categories.GetAll();
+                var featuredProductsTask = _products.Find(prd => prd.IsFeatured);
+                var controlsTask = GetService<IRepository<ControlMaster>>().Find(x => x.id == 1);
+                await Task.WhenAll(imagesTask, labelsTask, categoriesTask, featuredProductsTask, controlsTask);
+                var images = await imagesTask;
+                var labels = await labelsTask;
+                var categories = await categoriesTask;
+                var featuredProducts = await featuredProductsTask;
+                var controls = await controlsTask;
 
                 var imageDict = images.ToDictionary(img => img.Image_Srl, img => img.Image_Type);
 
@@ -121,8 +120,11 @@ namespace Central_Service.Service
             var output = new SearchModel();
             try
             {
-                var images = await _images.GetAll();
-                var selectedCategory =  (await _categories.Find(cat => cat.CategoryName == category)).FirstOrDefault();
+                var imagesTask = _images.GetAll();
+                var selectedCategoryTask =  _categories.Find(cat => cat.CategoryName == category);
+                await Task.WhenAll(imagesTask, selectedCategoryTask);
+                var images = await imagesTask;
+                var selectedCategory = (await selectedCategoryTask).FirstOrDefault();
 
                 var baseUri = new Uri(baseUrl);
                 var imageDict = images.ToDictionary(img => img.Image_Srl, img => img.Image_Type);
@@ -157,14 +159,14 @@ namespace Central_Service.Service
             return output;
         }
 
-        public async Task<int> SaveCart( List<ProductDto> Cart, string username )
+        public async Task<int> SaveCart( List<ProductDto> Cart, int userId )
         {
             try
             {
                 var repo = GetService<IRepository<User>>();
                 if (repo == null) return -1;
 
-                User? user = (await repo.Find(usr=>usr.Usr_Nam == username)).FirstOrDefault();
+                User? user = await repo.GetById(userId);
                 if(user == null) return -1;
 
                 user.Cart = Cart.JSONStringify();

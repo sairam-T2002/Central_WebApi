@@ -1,0 +1,37 @@
+﻿catergories-----
+INSERT INTO public."Categories" ("Category_Id", "CategoryName", "Image_Srl", "CreateDate", "ModifiedDate") VALUES (3, 'Pastries', 8, '-infinity', '-infinity');
+INSERT INTO public."Categories" ("Category_Id", "CategoryName", "Image_Srl", "CreateDate", "ModifiedDate") VALUES (4, 'Breads', 9, '-infinity', '-infinity');
+INSERT INTO public."Categories" ("Category_Id", "CategoryName", "Image_Srl", "CreateDate", "ModifiedDate") VALUES (1, 'Beverages', 1, '-infinity', '-infinity');
+INSERT INTO public."Categories" ("Category_Id", "CategoryName", "Image_Srl", "CreateDate", "ModifiedDate") VALUES (2, 'Desserts', 4, '-infinity', '-infinity');
+
+controlMaster------
+"INSERT INTO public.""ControlMaster"" (""id"", ""devUrl"", ""prodUrl"", ""gmapkey"", ""defaultSearchImg"", ""CreateDate"", ""ModifiedDate"") VALUES (""1"", 'https://localhost:7052/', 'https://localhost:7052/', 'not-null', '7', '-infinity', '-infinity');"
+
+Images-------
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (1, 'Bevarages', '.jpg', false, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (2, 'Soda''s', '.jpg', false, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (3, 'fresh juice', '.jpg', false, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (4, 'Desserts', '.jpg', false, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (5, 'Icone Butter scotch from arun', '.jpg', false, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (6, 'carousel 1', '.jpg', true, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (7, 'carousel 2', '.jpg', true, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (8, 'Pastries', '.jpg', false, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (9, 'Breads', '.jpg', false, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (10, 'Chocobar', '.jpg', false, '-infinity', '-infinity');
+INSERT INTO public."Images" ("Image_Srl", "Image_Description", "Image_Type", "IsCarousel", "CreateDate", "ModifiedDate") VALUES (11, 'All Search default', '.jpg', false, '-infinity', '-infinity');
+
+
+Labels------
+INSERT INTO public."Labels" ("Label_Id", "Labeld", "Label_Description", "CreateDate", "ModifiedDate") VALUES (1, 'Recommended', '1', '-infinity', '-infinity');
+INSERT INTO public."Labels" ("Label_Id", "Labeld", "Label_Description", "CreateDate", "ModifiedDate") VALUES (2, 'Categories', '2', '-infinity', '-infinity');
+INSERT INTO public."Labels" ("Label_Id", "Labeld", "Label_Description", "CreateDate", "ModifiedDate") VALUES (3, 'Featured', '3', '-infinity', '-infinity');
+
+Products-----
+INSERT INTO public."Products" ("Product_Id", "Product_Name", "Price", "IsVeg", "Image_Srl", "Category_Id", "IsFeatured", "Rating", "StockCount", "IsBestSeller", "RatingCount", "CreateDate", "ModifiedDate") VALUES (5, 'Icone Butterscotch', 55, true, 5, 2, true, 4.8, 59, true, 0, '-infinity', '-infinity');
+INSERT INTO public."Products" ("Product_Id", "Product_Name", "Price", "IsVeg", "Image_Srl", "Category_Id", "IsFeatured", "Rating", "StockCount", "IsBestSeller", "RatingCount", "CreateDate", "ModifiedDate") VALUES (1, 'fresh juice', 40, true, 3, 1, true, 4.3, 12, true, 0, '-infinity', '-infinity');
+INSERT INTO public."Products" ("Product_Id", "Product_Name", "Price", "IsVeg", "Image_Srl", "Category_Id", "IsFeatured", "Rating", "StockCount", "IsBestSeller", "RatingCount", "CreateDate", "ModifiedDate") VALUES (3, 'Chocobar', 25, true, 10, 2, false, 2.6, 56, false, 0, '-infinity', '-infinity');
+INSERT INTO public."Products" ("Product_Id", "Product_Name", "Price", "IsVeg", "Image_Srl", "Category_Id", "IsFeatured", "Rating", "StockCount", "IsBestSeller", "RatingCount", "CreateDate", "ModifiedDate") VALUES (2, 'Soda', 10, true, 2, 1, true, 3.8, 50, false, 0, '-infinity', '-infinity');
+
+Users----
+INSERT INTO public."Users" ("Id", "Usr_Nam", "Pwd", "E_Mail", "RefreshToken", "Cart", "CreateDate", "ModifiedDate") VALUES (1, 'sairam', '$2a$11$cDbLrQVk3tpPECKPLlf1Xe27f6lXHCnL4t3d3Mvw.B8Lx4BxpAf72', 'sairam.qwq@gmail.com', '2AhbrPlqKP61uQwmVy2CSO4tJEKxzwSKd29P2bFPA48=', '[{""Product_Id"":2,""Product_Name"":""Soda"",""Category_Id"":1,""Image_Url"":""string"",""IsVeg"":true,""IsBestSeller"":true,""StockCount"":0,""Rating"":0,""RatingCount"":0,""IsFeatured"":true,""Price"":20,""Quantity"":2}]', '2024-10-01', '2024-10-01');
+INSERT INTO public."Users" ("Id", "Usr_Nam", "Pwd", "E_Mail", "RefreshToken", "Cart", "CreateDate", "ModifiedDate") VALUES (2, 'sriram', '$2a$11$.D0JOZsbv/LLxu/lEWKFe.YsS3B68kthrPZRKL3YBpo8JjROtv7NS', 'sriram@gmail.com', 'ISScYQ05d58hE1lU4e/qV2mhElIBsPvkd+E45OwoVv8=', NULL, '2024-10-04', '2024-10-04');

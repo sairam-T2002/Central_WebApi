@@ -1,5 +1,4 @@
-﻿
-namespace Central_Service.Interface
+﻿namespace Central_Service.Interface
 {
     public interface ITestService
     {

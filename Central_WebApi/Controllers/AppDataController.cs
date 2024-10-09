@@ -2,7 +2,6 @@
 using Central_Service.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace Central_WebApi.Controllers
 {
@@ -58,9 +57,9 @@ namespace Central_WebApi.Controllers
         }
 
         [HttpPost("SaveCart")]
-        public async Task<IActionResult> SaveCart(List<ProductDto> cart, string username)
+        public async Task<IActionResult> SaveCart(List<ProductDto> cart, int userId)
         {
-            var result = await _service.SaveCart(cart, username).ConfigureAwait(false);
+            var result = await _service.SaveCart(cart, userId).ConfigureAwait(false);
             if(result == 1)
             {
                 return Ok(new { Status=true,Message="Cart saved"});

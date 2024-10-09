@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repository_DAL_.Model
 {
@@ -15,8 +10,13 @@ namespace Repository_DAL_.Model
 
         public string Order_Id {  get; set; }
 
-        [ForeignKey("Image")]
+        [ForeignKey("Reservations")]
         public string Reservation_Id { get; set; }
+
+        [ForeignKey("Users")]
+        public int Id { get; set; }
+
+        public double AmountPaid { get; set; }
 
         public virtual Reservation Reservation { get; set; }
 

@@ -1,5 +1,4 @@
-﻿
-namespace Central_Service.DTO
+﻿namespace Central_Service.DTO
 {
     public struct Login
     {

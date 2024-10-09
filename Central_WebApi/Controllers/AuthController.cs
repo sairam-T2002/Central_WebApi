@@ -2,14 +2,7 @@
 using Central_Service.DTO;
 using Repository_DAL_.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authorization;
 using Central_Service.JWT;
-using System.Dynamic;
 using ExtensionMethods;
 
 namespace Central_WebApi.Controllers
@@ -53,7 +46,7 @@ namespace Central_WebApi.Controllers
                 var refreshToken = _token.GenerateRefreshToken();
                 var cart = usr?.Cart?.JSONParse<List<ProductDto>>() ?? new List<ProductDto>();
                 await _service.SaveRefreshToken(cred.Username, refreshToken).ConfigureAwait(false);
-                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Username = usr.Usr_Nam, Cart = cart });
+                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Username = usr.Usr_Nam,UserId = usr.Id, Cart = cart });
             }
             return Unauthorized("No user was found");
         }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repository_DAL_.Model
 {
@@ -13,17 +8,21 @@ namespace Repository_DAL_.Model
         [Key]
         public int Srl {  get; set; }
 
-        
         public string Reservation_Id { get; set; } = string.Empty;
+
         [ForeignKey("Users")]
-        public string Id { get; set; } = string.Empty;
+        public int Id { get; set; }
 
         public string Cart { get; set; } = string.Empty;
+
+        public double CartPrice { get; set; }
 
         public DateTime CreatedTime { get; set; }
 
         public DateTime? ConfirmedTime { get; set; }
 
         public DateTime ExpireTime {  get; set; }
+
+        public bool IsExpired {  get; set; }
     }
 }

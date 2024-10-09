@@ -1,8 +1,5 @@
 ﻿using Central_Service.JWT;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace Central_WebApi.Middlewares
 {

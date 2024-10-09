@@ -2,11 +2,6 @@
 using Central_Service.Interface;
 using Central_Service.Payment;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Central_Service.Service
 {

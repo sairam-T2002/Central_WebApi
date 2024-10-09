@@ -1,5 +1,4 @@
-﻿
-using Central_Service.Payment;
+﻿using Central_Service.Payment;
 
 namespace Central_Service.DTO
 {
