@@ -60,7 +60,6 @@ namespace Central_Service.Service
 
             try
             {
-                // Fetch all required data asynchronously
                 var imagesTask = _images.GetAll();
                 var labelsTask = _labels.GetAll();
                 var categoriesTask = _categories.GetAll();
@@ -72,29 +71,18 @@ namespace Central_Service.Service
                 var categories = await categoriesTask;
                 var featuredProducts = await featuredProductsTask;
                 var controls = await controlsTask;
-
                 var imageDict = images.ToDictionary(img => img.Image_Srl, img => img.Image_Type);
-
-                // Process control
                 var control = controls.FirstOrDefault();
                 output.DefaultSearchBanner = BuildImageUrl(baseUri, control?.defaultSearchImg ?? 0, imageDict);
-
-                // Process labels
                 output.Label = labels.OrderBy(ex => ex.Label_Id).Select(lb => lb.Labeld).ToList();
-
-                // Process carousel images
                 output.CarouselUrls = images.Where(img => img.IsCarousel)
                                             .Select(img => BuildImageUrl(baseUri, img.Image_Srl, imageDict))
                                             .ToList();
-
-                // Process categories
                 output.Categories = categories
                     .OrderBy(cat => cat.CategoryName)
                     .Select(cat => _factory.BuildCategoryDto(cat, BuildImageUrl(baseUri, cat.Image_Srl, imageDict)))
                     .Where(dto => dto.Image_Url != null)
                     .ToList();
-
-                // Process featured products
                 output.FeaturedProducts = featuredProducts
                     .OrderBy(prd => prd.Product_Name)
                     .Select(product => _factory.BuildProductDto(product, BuildImageUrl(baseUri, product.Image_Srl, imageDict)))
@@ -131,7 +119,6 @@ namespace Central_Service.Service
 
                 if (selectedCategory != null)
                 {
-                    // Products in particular Category
                     var products = (await _products.Find(prd => prd.Category_Id == selectedCategory.Category_Id && prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()))).OrderBy(prd => prd.Product_Name);
                     output.CategoryId = selectedCategory.Category_Id;
                     output.CategoryName = selectedCategory.CategoryName;
@@ -141,7 +128,6 @@ namespace Central_Service.Service
                 }
                 else if (category.ToLower() == "all")
                 {
-                    // Products in Every Category
                     var products = await _products.Find(prd => prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()));
                     output.CategoryId = 0;
                     output.CategoryName = "All";
@@ -165,10 +151,8 @@ namespace Central_Service.Service
             {
                 var repo = GetService<IRepository<User>>();
                 if (repo == null) return -1;
-
                 User? user = await repo.GetById(userId);
                 if(user == null) return -1;
-
                 user.Cart = Cart.JSONStringify();
                 await repo.Update(user);
                 return 1;

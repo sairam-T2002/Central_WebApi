@@ -3,61 +3,109 @@ using Central_Service.Interface;
 using Microsoft.Extensions.Logging;
 using Repository_DAL_.Model;
 using Repository_DAL_;
-using System.Text;
 using Central_Service.DTO;
 using ExtensionMethods;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Central_Service.Service
 {
     public class ReservationService : ServiceBase, IReservationService
     {
-        private readonly IRepository<Reservation> _reservation;
-        protected readonly EFContext _context;
+        private readonly IRepository<Reservation> _reservationRepository;
+        private readonly IRepository<ApiLog> _logService;
+        private readonly EFContext _context;
 
-        public ReservationService( ILogger<AuthService> logger, IServiceProvider serviceProvider, IRepository<Reservation> reservation, EFContext context ) : base(logger, serviceProvider)
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+        public ReservationService( ILogger<ReservationService> logger, IServiceProvider serviceProvider, IRepository<Reservation> reservationRepository, IRepository<ApiLog> logService, EFContext context ) : base(logger, serviceProvider)
         {
-            _reservation = reservation;
+            _reservationRepository = reservationRepository;
             _context = context;
+            _logService = logService;
         }
 
-        public async Task<bool> ReserveCart( List<ProductDto> Cart, int userId )
+        public async Task<bool> ReserveCart( List<ProductDto> cart, int userId )
         {
-            await UpdateStockcount(Cart);
-            string reservationId = $"Reservation_{Guid.NewGuid()}";
-            Reservation newReservation = new Reservation
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                Reservation_Id = reservationId,
-                Cart = Cart.JSONStringify(),
-                CreatedTime = DateTime.UtcNow,
-                ExpireTime = DateTime.UtcNow.AddMinutes(2),
-                IsExpired = false,
-                Id = userId
-            };
-            await _reservation.Add(newReservation);
-            _ = Task.Run(() => MonitorReservationStatus(reservationId, CancellationToken.None));
-            return true;
+                if (!await UpdateStockCount(cart))
+                {
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                string reservationId = $"Reservation_{Guid.NewGuid()}";
+                var newReservation = new Reservation
+                {
+                    Reservation_Id = reservationId,
+                    Cart = cart.JSONStringify(),
+                    CreatedTime = DateTime.UtcNow,
+                    ExpireTime = DateTime.UtcNow.AddMinutes(10),
+                    IsExpired = false,
+                    Id = userId
+                };
+                await _reservationRepository.Add(newReservation);
+                await transaction.CommitAsync();
+                _ = Task.Run(() => MonitorReservationStatus(reservationId, CancellationToken.None));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                await LogAsync(nameof(ReserveCart), LogUtil.Exception, ex.JSONStringify(), ex.Message);
+                return false;
+            }
         }
 
-        private async void MonitorReservationStatus( string reservationId, CancellationToken cancellationToken )
+
+        private async Task<bool> UpdateStockCount( List<ProductDto> cart )
         {
-            using (var scope = CreateScope())
+            await _semaphore.WaitAsync();
+            try
             {
-                var context = scope.ServiceProvider.GetService(typeof(EFContext)) as EFContext;
-                Reservation reservation;
+                if (cart == null || !cart.Any())
+                    return true;
+                var productIds = cart.Select(item => item.Product_Id).ToList();
+                var products = await _context.Products.Where(p => productIds.Contains(p.Product_Id)).ToListAsync();
+                foreach (var item in cart)
+                {
+                    var product = products.FirstOrDefault(p => p.Product_Id == item.Product_Id);
+                    if (product == null || product.StockCount < item.Quantity)
+                    {
+                        return false;
+                    }
+                    product.StockCount -= item.Quantity;
+                }
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    await LogAsync(nameof(UpdateStockCount), LogUtil.Exception, ex.JSONStringify(), "Concurrency conflict occurred while updating stock count.");
+                    return false;
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private async Task MonitorReservationStatus( string reservationId, CancellationToken cancellationToken )
+        {
+            try
+            {
+                using var scope = CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<EFContext>();
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    reservation = await GetReservationById(reservationId, context);
-                    if (reservation == null)
+                    await Task.Delay(TimeSpan.FromMinutes(3), cancellationToken);
+                    var reservation = await GetReservationById(reservationId, context);
+                    if (reservation == null || reservation.ConfirmedTime != null)
                     {
-                        // Reservation not found, exit the loop
-                        break;
-                    }
-
-                    if (reservation.ConfirmedTime != null)
-                    {
-                        // Reservation is confirmed, exit the loop
                         break;
                     }
 
@@ -66,83 +114,79 @@ namespace Central_Service.Service
                         await HandleReservationExpiration(reservation, context);
                         break;
                     }
-
-                    // Wait for 20 seconds before the next check
-                    await Task.Delay(TimeSpan.FromSeconds(20), cancellationToken);
                 }
+            }
+            catch (Exception ex)
+            {
+                await LogAsync(nameof(MonitorReservationStatus), LogUtil.Exception, ex.JSONStringify(), ex.Message);
             }
         }
 
-        private async Task UpdateStockcount( List<ProductDto> Cart )
-        {
-            if (Cart == null || !Cart.Any())
-                return;
-
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                var updates = Cart.Select(item => new { item.Product_Id, item.StockCount }).ToList();
-                var query = new StringBuilder();
-                var parameters = new List<NpgsqlParameter>();
-
-                for (int i = 0; i < updates.Count; i++)
-                {
-                    query.Append($"UPDATE public.\"Products\" SET \"StockCount\" = \"StockCount\" - @Quantity{i} WHERE \"Product_Id\" = @ProductId{i};");
-                    parameters.Add(new NpgsqlParameter($"@ProductId{i}", updates[i].Product_Id));
-                    parameters.Add(new NpgsqlParameter($"@Quantity{i}", updates[i].StockCount));
-                }
-
-                await _context.Database.ExecuteSqlRawAsync(query.ToString(), parameters);
-
-                await transaction.CommitAsync();
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync();
-                throw; // Re-throw the exception after rolling back
-            }
-        }
-
-        public bool IsReservationExpired( Reservation reservation )
+        private bool IsReservationExpired( Reservation reservation )
         {
             return DateTime.UtcNow > reservation.ExpireTime;
         }
 
         private async Task HandleReservationExpiration( Reservation reservation, EFContext context )
         {
-            List<ProductDto> Cart = reservation.Cart.JSONParse<List<ProductDto>>();
-
-            var updates = Cart.Select(item => new { item.Product_Id, item.StockCount }).ToList();
-
-            using var transaction = await context.Database.BeginTransactionAsync();
+            await _semaphore.WaitAsync();
             try
             {
-                var query = new StringBuilder();
-                var parameters = new List<NpgsqlParameter>();
-                parameters.Add(new NpgsqlParameter("@Reservation_Id", reservation.Reservation_Id));
-                query.Append("UPDATE public.\"Reservations\" SET \"IsExpired\" = true WHERE \"Reservation_Id\" = @Reservation_Id;");
-                for (int i = 0; i < updates.Count; i++)
+                List<ProductDto> cart = reservation.Cart.JSONParse<List<ProductDto>>();
+                using var transaction = await context.Database.BeginTransactionAsync();
+                try
                 {
-                    query.Append($"UPDATE public.\"Products\" SET \"StockCount\" = \"StockCount\" + @Quantity{i} WHERE \"Product_Id\" = @ProductId{i};");
-                    parameters.Add(new NpgsqlParameter($"@ProductId{i}", updates[i].Product_Id));
-                    parameters.Add(new NpgsqlParameter($"@Quantity{i}", updates[i].StockCount));
+                    reservation.IsExpired = true;
+                    context.Entry(reservation).State = EntityState.Modified;
+                    var productIds = cart.Select(item => item.Product_Id).ToList();
+                    var products = await context.Products
+                        .Where(p => productIds.Contains(p.Product_Id))
+                        .ToListAsync();
+
+                    foreach (var item in cart)
+                    {
+                        var product = products.FirstOrDefault(p => p.Product_Id == item.Product_Id);
+                        if (product != null)
+                        {
+                            product.StockCount += item.Quantity;
+                        }
+                    }
+
+                    await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
                 }
-
-                await context.Database.ExecuteSqlRawAsync(query.ToString(), parameters);
-
-                await transaction.CommitAsync();
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    await transaction.RollbackAsync();
+                    await LogAsync(nameof(HandleReservationExpiration), LogUtil.Exception, ex.JSONStringify(), "Concurrency conflict occurred while handling reservation expiration.");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    await LogAsync(nameof(HandleReservationExpiration), LogUtil.Exception, ex.JSONStringify(), ex.Message);
+                }
             }
-            catch (Exception)
+            finally
             {
-                await transaction.RollbackAsync();
-                throw; // Re-throw the exception after rolling back
+                _semaphore.Release();
             }
         }
 
-        private async Task<Reservation> GetReservationById( string reservationId, EFContext context )
+        private async Task<Reservation?> GetReservationById( string reservationId, EFContext context )
         {
-            var repo = new Repository<Reservation>(context);
-            return (await repo.Find(resrv => resrv.Reservation_Id == reservationId)).FirstOrDefault();
+            return await context.Reservations
+                .FirstOrDefaultAsync(r => r.Reservation_Id == reservationId);
+        }
+
+        private async Task LogAsync( string methodName, string logType, string logMessage, string exception = "" )
+        {
+            await _logService.Add(new ApiLog
+            {
+                log_origin = $"ReservationService.{methodName}-{logType}",
+                log = logMessage,
+                Exception = exception,
+                DateTime = DateTime.UtcNow
+            });
         }
     }
 }

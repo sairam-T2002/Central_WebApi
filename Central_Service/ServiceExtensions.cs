@@ -15,7 +15,7 @@ namespace Central_Service
             services.AddDbContext<EFContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")),
     ServiceLifetime.Transient);
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<ITestService, TestService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPaymentService, PaymentService>(); 
