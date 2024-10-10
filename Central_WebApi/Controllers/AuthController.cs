@@ -47,9 +47,9 @@ public class AuthController : ControllerBase
         {
             var accessToken = _token.GenerateAccessToken(cred.Username, _configuration);
             var refreshToken = _token.GenerateRefreshToken();
-            var cart = usr?.Cart?.JSONParse<List<ProductDto>>() ?? new List<ProductDto>();
+            var cart = usr?.cart?.JSONParse<List<ProductDto>>() ?? new List<ProductDto>();
             await _service.SaveRefreshToken(cred.Username, refreshToken).ConfigureAwait(false);
-            return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Username = usr.Usr_Nam, UserId = usr.Id, Cart = cart });
+            return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Username = usr.usr_nam, UserId = usr.id, Cart = cart });
         }
         return Unauthorized("No user was found");
     }

@@ -29,9 +29,9 @@ public class PaymentController : ControllerBase
     #region Actions
 
     [HttpPost("AcceptPayment")]
-    public IPaymentDTO AcceptPayment( [FromBody] PaymentInput input )
+    public async Task<IActionResult> AcceptPayment( [FromBody] PaymentInput input )
     {
-        return _paymentService.AcceptPayment(input.input, input.PaymentMethod);
+        return Ok(await _paymentService.AcceptPayment(input.input, input.PaymentMethod));
     }
 
     #endregion

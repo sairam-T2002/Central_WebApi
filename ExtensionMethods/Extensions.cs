@@ -6,16 +6,32 @@ namespace ExtensionMethods;
 
 public static class Extensions
 {
-    public static T DeepClone<T>( this T toClone )
+    public static T? DeepClone<T>( this T source )
     {
-        T t = default(T);
+        if (source == null)
+        {
+            return default;
+        }
+
         try
         {
-            if (toClone != null)
-                t = JsonSerializer.Deserialize<T>(JsonSerializer.Serialize<T>(toClone));
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
+                MaxDepth = 64
+            };
+
+            string serialized = JsonSerializer.Serialize(source, options);
+            return JsonSerializer.Deserialize<T>(serialized, options);
         }
-        catch { }
-        return t;
+        catch (JsonException jsonEx)
+        {
+            throw new InvalidOperationException("Failed to serialize or deserialize the object during deep cloning.", jsonEx);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An unexpected error occurred during deep cloning.", ex);
+        }
     }
 
     public static string JSONStringify<T>( this T obj )
@@ -43,7 +59,7 @@ public static class Extensions
         if (string.IsNullOrWhiteSpace(str))
             return str;
 
-        return $"{char.ToUpper(str[0], System.Globalization.CultureInfo.CurrentCulture)}{str.Substring(1)}";
+        return $"{char.ToUpper(str[0], CultureInfo.CurrentCulture)}{str.Substring(1)}";
     }
 
     public static string ToTitleCase( this string str )

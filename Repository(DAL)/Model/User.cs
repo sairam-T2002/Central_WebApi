@@ -6,19 +6,19 @@ namespace Repository_DAL_.Model;
 public class User
 {
     [Key]
-    public int Id { get; set; }
+    public int id { get; set; }
 
-    public string Usr_Nam { get; set; }
+    public string usr_nam { get; set; }
 
-    public string Pwd { get; set; }
+    public string pwd { get; set; }
 
-    public string E_Mail { get; set; }
+    public string e_mail { get; set; }
 
-    public string? RefreshToken { get; set; }
+    public string? refreshtoken { get; set; }
 
-    public string? Cart { get; set; }
+    public string? cart { get; set; }
 
-    public DateOnly CreateDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public DateOnly createdate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
-    public DateOnly ModifiedDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public DateOnly modifieddate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 }

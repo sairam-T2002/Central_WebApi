@@ -5,15 +5,15 @@ namespace Repository_DAL_.Model;
 public class Image
 {
     [Key]
-    public int Image_Srl { get; set; }
+    public int image_srl { get; set; }
 
-    public string? Image_Description { get; set; }
+    public string? image_description { get; set; }
 
-    public string Image_Type { get; set; } = string.Empty;
+    public string image_type { get; set; } = string.Empty;
 
-    public bool IsCarousel { get; set; }
+    public bool iscarousel { get; set; }
 
-    public DateTime CreateDate { get; set; } = DateTime.UtcNow;
+    public DateTime createdate { get; set; } = DateTime.UtcNow;
 
-    public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
+    public DateTime modifieddate { get; set; } = DateTime.UtcNow;
 }

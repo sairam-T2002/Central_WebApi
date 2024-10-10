@@ -30,9 +30,8 @@ public class ReservationController : ControllerBase
     [HttpPost("ReserveCart")]
     public async Task<IActionResult> ReserveCart( [FromBody] List<ProductDto> cart, int userId )
     {
-        bool reservationResult = await _service.ReserveCart(cart, userId);
-        if (reservationResult) return Ok(new { Status = true, Message = "Reservation Successful" });
-        else return Ok(new { Status = false, Message = "Reservation Failed" });
+        var reservationResult = await _service.ReserveCart(cart, userId);
+        return Ok(reservationResult);
     }
 
     #endregion

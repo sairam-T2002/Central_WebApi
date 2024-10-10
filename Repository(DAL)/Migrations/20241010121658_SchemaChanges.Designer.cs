@@ -12,8 +12,8 @@ using Repository_DAL_;
 namespace Repository_DAL_.Migrations
 {
     [DbContext(typeof(EFContext))]
-    [Migration("20241009085128_tablechanges")]
-    partial class tablechanges
+    [Migration("20241010121658_SchemaChanges")]
+    partial class SchemaChanges
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,41 @@ namespace Repository_DAL_.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Repository_DAL_.Model.Address", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+
+                    b.Property<string>("address_lane")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("address_type")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("city")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("landmark")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("pincode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("user_id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("id");
+
+                    b.ToTable("address");
+                });
+
             modelBuilder.Entity("Repository_DAL_.Model.ApiLog", b =>
                 {
                     b.Property<int>("srl")
@@ -33,10 +68,10 @@ namespace Repository_DAL_.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("srl"));
 
-                    b.Property<DateTime>("DateTime")
+                    b.Property<DateTime>("datetime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Exception")
+                    b.Property<string>("exception")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -50,35 +85,35 @@ namespace Repository_DAL_.Migrations
 
                     b.HasKey("srl");
 
-                    b.ToTable("ApiLog");
+                    b.ToTable("apilog");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Category", b =>
                 {
-                    b.Property<int>("Category_Id")
+                    b.Property<int>("category_id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Category_Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("category_id"));
 
-                    b.Property<string>("CategoryName")
+                    b.Property<string>("categoryname")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime>("createdate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Image_Srl")
+                    b.Property<int>("image_srl")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("modifieddate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Category_Id");
+                    b.HasKey("category_id");
 
-                    b.HasIndex("Image_Srl");
+                    b.HasIndex("image_srl");
 
-                    b.ToTable("Categories");
+                    b.ToTable("categories");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.ControlMaster", b =>
@@ -89,299 +124,311 @@ namespace Repository_DAL_.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime>("createdate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("defaultSearchImg")
+                    b.Property<int>("defaultsearchimg")
                         .HasColumnType("integer");
 
-                    b.Property<string>("devUrl")
+                    b.Property<string>("devurl")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("gmapkey")
                         .HasColumnType("text");
 
-                    b.Property<string>("prodUrl")
+                    b.Property<DateTime>("modifieddate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("produrl")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("id");
 
-                    b.ToTable("ControlMaster");
+                    b.ToTable("controlmaster");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Image", b =>
                 {
-                    b.Property<int>("Image_Srl")
+                    b.Property<int>("image_srl")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Image_Srl"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("image_srl"));
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime>("createdate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Image_Description")
+                    b.Property<string>("image_description")
                         .HasColumnType("text");
 
-                    b.Property<string>("Image_Type")
+                    b.Property<string>("image_type")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsCarousel")
+                    b.Property<bool>("iscarousel")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("modifieddate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Image_Srl");
+                    b.HasKey("image_srl");
 
-                    b.ToTable("Images");
+                    b.ToTable("images");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Label", b =>
                 {
-                    b.Property<int>("Label_Id")
+                    b.Property<int>("label_id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Label_Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("label_id"));
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime>("createdate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Label_Description")
+                    b.Property<string>("label_description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Labeld")
+                    b.Property<string>("labeld")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("modifieddate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Label_Id");
+                    b.HasKey("label_id");
 
-                    b.ToTable("Labels");
+                    b.ToTable("labels");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Orders", b =>
                 {
-                    b.Property<int>("Srl")
+                    b.Property<int>("srl")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Srl"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("srl"));
 
-                    b.Property<double>("AmountPaid")
+                    b.Property<double>("amountpaid")
                         .HasColumnType("double precision");
 
-                    b.Property<DateTime?>("CancellendAt")
+                    b.Property<DateTime?>("cancellendate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Order_Id")
+                    b.Property<string>("confirmationstatus")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ReservationSrl")
+                    b.Property<DateTime>("createdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("id")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Reservation_Id")
+                    b.Property<string>("order_id")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Srl");
+                    b.Property<string>("paymentmethod")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.HasIndex("ReservationSrl");
+                    b.Property<string>("reservation_id")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.ToTable("Orders");
+                    b.Property<int>("reservationsrl")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("transactionref")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("srl");
+
+                    b.HasIndex("reservationsrl");
+
+                    b.ToTable("orders");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Product", b =>
                 {
-                    b.Property<int>("Product_Id")
+                    b.Property<int>("product_id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Product_Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("product_id"));
 
-                    b.Property<int>("Category_Id")
+                    b.Property<int>("category_id")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTime>("createdate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Image_Srl")
+                    b.Property<int>("image_srl")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsBestSeller")
+                    b.Property<bool>("isbestseller")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsFeatured")
+                    b.Property<bool>("isfeatured")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsVeg")
+                    b.Property<bool>("isveg")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("modifieddate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Price")
+                    b.Property<int>("price")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Product_Name")
+                    b.Property<string>("product_name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("Rating")
+                    b.Property<double>("rating")
                         .HasColumnType("double precision");
 
-                    b.Property<int>("RatingCount")
+                    b.Property<int>("ratingcount")
                         .HasColumnType("integer");
 
-                    b.Property<int>("StockCount")
+                    b.Property<int>("stockcount")
                         .HasColumnType("integer");
 
-                    b.HasKey("Product_Id");
+                    b.HasKey("product_id");
 
-                    b.HasIndex("Category_Id");
+                    b.HasIndex("category_id");
 
-                    b.HasIndex("Image_Srl");
+                    b.HasIndex("image_srl");
 
-                    b.ToTable("Products");
+                    b.ToTable("products");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Reservation", b =>
                 {
-                    b.Property<int>("Srl")
+                    b.Property<int>("srl")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Srl"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("srl"));
 
-                    b.Property<string>("Cart")
+                    b.Property<string>("cart")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("CartPrice")
+                    b.Property<double>("cartprice")
                         .HasColumnType("double precision");
 
-                    b.Property<DateTime?>("ConfirmedTime")
+                    b.Property<DateTime?>("confirmedtime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CreatedTime")
+                    b.Property<DateTime>("createdtime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("ExpireTime")
+                    b.Property<DateTime>("expiretime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsExpired")
+                    b.Property<bool>("isexpired")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Reservation_Id")
+                    b.Property<string>("reservation_id")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Srl");
+                    b.HasKey("srl");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("reservations");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<string>("Cart")
+                    b.Property<string>("cart")
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("CreateDate")
+                    b.Property<DateOnly>("createdate")
                         .HasColumnType("date");
 
-                    b.Property<string>("E_Mail")
+                    b.Property<string>("e_mail")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("ModifiedDate")
+                    b.Property<DateOnly>("modifieddate")
                         .HasColumnType("date");
 
-                    b.Property<string>("Pwd")
+                    b.Property<string>("pwd")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("RefreshToken")
+                    b.Property<string>("refreshtoken")
                         .HasColumnType("text");
 
-                    b.Property<string>("Usr_Nam")
+                    b.Property<string>("usr_nam")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
-                    b.ToTable("Users");
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Category", b =>
                 {
-                    b.HasOne("Repository_DAL_.Model.Image", "Image")
+                    b.HasOne("Repository_DAL_.Model.Image", "image")
                         .WithMany()
-                        .HasForeignKey("Image_Srl")
+                        .HasForeignKey("image_srl")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Image");
+                    b.Navigation("image");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Orders", b =>
                 {
-                    b.HasOne("Repository_DAL_.Model.Reservation", "Reservation")
+                    b.HasOne("Repository_DAL_.Model.Reservation", "reservation")
                         .WithMany()
-                        .HasForeignKey("ReservationSrl")
+                        .HasForeignKey("reservationsrl")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Reservation");
+                    b.Navigation("reservation");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Product", b =>
                 {
-                    b.HasOne("Repository_DAL_.Model.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("Category_Id")
+                    b.HasOne("Repository_DAL_.Model.Category", "category")
+                        .WithMany("products")
+                        .HasForeignKey("category_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Repository_DAL_.Model.Image", "Image")
+                    b.HasOne("Repository_DAL_.Model.Image", "image")
                         .WithMany()
-                        .HasForeignKey("Image_Srl")
+                        .HasForeignKey("image_srl")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("category");
 
-                    b.Navigation("Image");
+                    b.Navigation("image");
                 });
 
             modelBuilder.Entity("Repository_DAL_.Model.Category", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("products");
                 });
 #pragma warning restore 612, 618
         }

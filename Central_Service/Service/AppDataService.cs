@@ -46,8 +46,8 @@ public class AppDataService : ServiceBase, IAppDataService
         {
             log_origin = $"AppDataService.{methodName}-{logType}",
             log = logMessage,
-            Exception = exception,
-            DateTime = DateTime.UtcNow
+            exception = exception,
+            datetime = DateTime.UtcNow
         });
     }
 
@@ -73,7 +73,7 @@ public class AppDataService : ServiceBase, IAppDataService
             var imagesTask = _images.GetAll();
             var labelsTask = _labels.GetAll();
             var categoriesTask = _categories.GetAll();
-            var featuredProductsTask = _products.Find(prd => prd.IsFeatured);
+            var featuredProductsTask = _products.Find(prd => prd.isfeatured);
             var controlsTask = GetService<IRepository<ControlMaster>>().Find(x => x.id == 1);
             await Task.WhenAll(imagesTask, labelsTask, categoriesTask, featuredProductsTask, controlsTask);
             var images = await imagesTask;
@@ -81,21 +81,21 @@ public class AppDataService : ServiceBase, IAppDataService
             var categories = await categoriesTask;
             var featuredProducts = await featuredProductsTask;
             var controls = await controlsTask;
-            var imageDict = images.ToDictionary(img => img.Image_Srl, img => img.Image_Type);
+            var imageDict = images.ToDictionary(img => img.image_srl, img => img.image_type);
             var control = controls.FirstOrDefault();
-            output.DefaultSearchBanner = BuildImageUrl(baseUri, control?.defaultSearchImg ?? 0, imageDict);
-            output.Label = labels.OrderBy(ex => ex.Label_Id).Select(lb => lb.Labeld).ToList();
-            output.CarouselUrls = images.Where(img => img.IsCarousel)
-                                        .Select(img => BuildImageUrl(baseUri, img.Image_Srl, imageDict))
+            output.DefaultSearchBanner = BuildImageUrl(baseUri, control?.defaultsearchimg ?? 0, imageDict);
+            output.Label = labels.OrderBy(ex => ex.label_id).Select(lb => lb.labeld).ToList();
+            output.CarouselUrls = images.Where(img => img.iscarousel)
+                                        .Select(img => BuildImageUrl(baseUri, img.image_srl, imageDict))
                                         .ToList();
             output.Categories = categories
-                                        .OrderBy(cat => cat.CategoryName)
-                                        .Select(cat => _factory.BuildCategoryDto(cat, BuildImageUrl(baseUri, cat.Image_Srl, imageDict)))
+                                        .OrderBy(cat => cat.categoryname)
+                                        .Select(cat => _factory.BuildCategoryDto(cat, BuildImageUrl(baseUri, cat.image_srl, imageDict)))
                                         .Where(dto => dto.Image_Url != null)
                                         .ToList();
             output.FeaturedProducts = featuredProducts
-                                        .OrderBy(prd => prd.Product_Name)
-                                        .Select(product => _factory.BuildProductDto(product, BuildImageUrl(baseUri, product.Image_Srl, imageDict)))
+                                        .OrderBy(prd => prd.product_name)
+                                        .Select(product => _factory.BuildProductDto(product, BuildImageUrl(baseUri, product.image_srl, imageDict)))
                                         .Where(dto => dto.Image_Url != null)
                                         .ToList();
 
@@ -111,37 +111,35 @@ public class AppDataService : ServiceBase, IAppDataService
         return output;
     }
 
-
-
     public async Task<SearchModel> SeachResult( string baseUrl, string category, string searchQuery )
     {
         var output = new SearchModel();
         try
         {
             var imagesTask = _images.GetAll();
-            var selectedCategoryTask = _categories.Find(cat => cat.CategoryName == category);
+            var selectedCategoryTask = _categories.Find(cat => cat.categoryname == category);
             await Task.WhenAll(imagesTask, selectedCategoryTask);
             var images = await imagesTask;
             var selectedCategory = (await selectedCategoryTask).FirstOrDefault();
 
             var baseUri = new Uri(baseUrl);
-            var imageDict = images.ToDictionary(img => img.Image_Srl, img => img.Image_Type);
+            var imageDict = images.ToDictionary(img => img.image_srl, img => img.image_type);
 
             if (selectedCategory != null)
             {
-                var products = (await _products.Find(prd => prd.Category_Id == selectedCategory.Category_Id && prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()))).OrderBy(prd => prd.Product_Name);
-                output.CategoryId = selectedCategory.Category_Id;
-                output.CategoryName = selectedCategory.CategoryName;
-                output.CategoryImageUrl = BuildImageUrl(baseUri, selectedCategory.Image_Srl, imageDict);
+                var products = (await _products.Find(prd => prd.category_id == selectedCategory.category_id && prd.product_name.ToLower().Contains(searchQuery.Trim().ToLower()))).OrderBy(prd => prd.product_name);
+                output.CategoryId = selectedCategory.category_id;
+                output.CategoryName = selectedCategory.categoryname;
+                output.CategoryImageUrl = BuildImageUrl(baseUri, selectedCategory.image_srl, imageDict);
 
-                output.Result = products.Select(ex => _factory.BuildProductDto(ex, BuildImageUrl(baseUri, ex.Image_Srl, imageDict))).ToList();
+                output.Result = products.Select(ex => _factory.BuildProductDto(ex, BuildImageUrl(baseUri, ex.image_srl, imageDict))).ToList();
             }
             else if (category.ToLower() == "all")
             {
-                var products = await _products.Find(prd => prd.Product_Name.ToLower().Contains(searchQuery.Trim().ToLower()));
+                var products = await _products.Find(prd => prd.product_name.ToLower().Contains(searchQuery.Trim().ToLower()));
                 output.CategoryId = 0;
                 output.CategoryName = "All";
-                output.Result = products.Select(ex => _factory.BuildProductDto(ex, BuildImageUrl(baseUri, ex.Image_Srl, imageDict))).ToList();
+                output.Result = products.Select(ex => _factory.BuildProductDto(ex, BuildImageUrl(baseUri, ex.image_srl, imageDict))).ToList();
             }
             else
             {
@@ -163,7 +161,7 @@ public class AppDataService : ServiceBase, IAppDataService
             if (repo == null) return -1;
             User? user = await repo.GetById(userId);
             if (user == null) return -1;
-            user.Cart = Cart.JSONStringify();
+            user.cart = Cart.JSONStringify();
             await repo.Update(user);
             return 1;
         }

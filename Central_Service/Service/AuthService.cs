@@ -27,10 +27,10 @@ public class AuthService : ServiceBase, IAuthService
 
     public async Task<User?> Login( Login cred )
     {
-        var usrs = await _user.Find(x => x.Usr_Nam == cred.Username || x.E_Mail == cred.Username);
+        var usrs = await _user.Find(x => x.usr_nam == cred.Username || x.e_mail == cred.Username);
         var usr = usrs.FirstOrDefault();
 
-        if (usr != null && BCrypt.Net.BCrypt.Verify(cred.Password, usr.Pwd))
+        if (usr != null && BCrypt.Net.BCrypt.Verify(cred.Password, usr.pwd))
         {
             return usr;
         }
@@ -43,20 +43,20 @@ public class AuthService : ServiceBase, IAuthService
         try
         {
             User temp = user.DeepClone<User>();
-            var usrs = await _user.Find(x => x.Usr_Nam == temp.Usr_Nam || x.E_Mail == temp.Usr_Nam);
+            var usrs = await _user.Find(x => x.usr_nam == temp.usr_nam || x.e_mail == temp.usr_nam);
             var usr = usrs.FirstOrDefault();
             if (usr != null)
             {
-                if (usr.E_Mail == temp.E_Mail)
+                if (usr.e_mail == temp.e_mail)
                 {
                     return -1;
                 }
                 return -2;
             }
 
-            temp.Pwd = BCrypt.Net.BCrypt.HashPassword(temp.Pwd);
-            temp.CreateDate = DateOnly.FromDateTime(DateTime.UtcNow);
-            temp.ModifiedDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            temp.pwd = BCrypt.Net.BCrypt.HashPassword(temp.pwd);
+            temp.createdate = DateOnly.FromDateTime(DateTime.UtcNow);
+            temp.modifieddate = DateOnly.FromDateTime(DateTime.UtcNow);
 
             await _user.Add(temp);
             return 1;
@@ -70,20 +70,20 @@ public class AuthService : ServiceBase, IAuthService
 
     public async Task SaveRefreshToken( string username, string refreshToken )
     {
-        var usrs = await _user.Find(x => x.Usr_Nam == username);
+        var usrs = await _user.Find(x => x.usr_nam == username);
         var usr = usrs.FirstOrDefault();
         if (usr != null)
         {
-            usr.RefreshToken = refreshToken;
+            usr.refreshtoken = refreshToken;
             await _user.Update(usr);
         }
     }
 
     public async Task<string?> GetRefreshToken( string username )
     {
-        var usrs = await _user.Find(x => x.Usr_Nam == username);
+        var usrs = await _user.Find(x => x.usr_nam == username);
         var usr = usrs.FirstOrDefault();
-        return usr?.RefreshToken;
+        return usr?.refreshtoken;
     }
 
     #endregion

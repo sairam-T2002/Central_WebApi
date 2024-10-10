@@ -8,16 +8,16 @@ public partial class EFContext : DbContext
     public EFContext( DbContextOptions<EFContext> options ) : base(options)
     {
     }
-    public DbSet<User> Users { get; set; }
-    public DbSet<Category> Categories { get; set; }
-    public DbSet<Product> Products { get; set; }
-    public DbSet<Image> Images { get; set; }
-    public DbSet<ControlMaster> ControlMaster { get; set; }
-    public DbSet<Label> Labels { get; set; }
-    public DbSet<Reservation> Reservations { get; set; }
-    public DbSet<Orders> Orders { get; set; }
-    public DbSet<Address> Address { get; set; }
+    public DbSet<User> users { get; set; }
+    public DbSet<Category> categories { get; set; }
+    public DbSet<Product> products { get; set; }
+    public DbSet<Image> images { get; set; }
+    public DbSet<ControlMaster> controlmaster { get; set; }
+    public DbSet<Label> labels { get; set; }
+    public DbSet<Reservation> reservations { get; set; }
+    public DbSet<Orders> orders { get; set; }
+    public DbSet<Address> address { get; set; }
 
 
-    public DbSet<ApiLog> ApiLog { get; set; }
+    public DbSet<ApiLog> apilog { get; set; }
 }

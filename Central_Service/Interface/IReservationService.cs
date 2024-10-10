@@ -4,5 +4,7 @@ namespace Central_Service.Interface;
 
 public interface IReservationService
 {
-    Task<bool> ReserveCart( List<ProductDto> Cart, int userId );
+    Task<ReserveCartDTO> ReserveCart( List<ProductDto> Cart, int userId );
+
+    Task<OrderDTOOut> ConfirmReservation( OrderDTOInp input);
 }

@@ -6,37 +6,37 @@ namespace Repository_DAL_.Model;
 public class Product
 {
     [Key]
-    public int Product_Id { get; set; }
+    public int product_id { get; set; }
 
-    public string Product_Name { get; set; }
+    public string product_name { get; set; }
 
-    public int Price { get; set; }
+    public int price { get; set; }
 
-    public bool IsVeg { get; set; }
+    public bool isveg { get; set; }
 
-    [ForeignKey("Image")]
-    public int Image_Srl { get; set; }
+    [ForeignKey("image")]
+    public int image_srl { get; set; }
 
-    public virtual Image Image { get; set; }
+    public virtual Image image { get; set; }
 
-    [ForeignKey("Category")]
-    public int Category_Id { get; set; }
+    [ForeignKey("category")]
+    public int category_id { get; set; }
 
-    public virtual Category Category { get; set; }
+    public virtual Category category { get; set; }
 
-    public bool IsFeatured { get; set; }
+    public bool isfeatured { get; set; }
 
     [Range(0, 5, ErrorMessage = "Reviews must be between 0 and 5.")]
     [RegularExpression(@"\d+(\.\d{1,2})?", ErrorMessage = "Reviews can have a maximum of 2 decimal places.")]
-    public double Rating { get; set; }
+    public double rating { get; set; }
 
-    public int RatingCount { get; set; }
+    public int ratingcount { get; set; }
 
-    public int StockCount { get; set; }
+    public int stockcount { get; set; }
 
-    public bool IsBestSeller { get; set; }
+    public bool isbestseller { get; set; }
 
-    public DateTime CreateDate { get; set; } = DateTime.UtcNow;
+    public DateTime createdate { get; set; } = DateTime.UtcNow;
 
-    public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
+    public DateTime modifieddate { get; set; } = DateTime.UtcNow;
 }

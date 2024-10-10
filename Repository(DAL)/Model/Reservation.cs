@@ -6,22 +6,22 @@ namespace Repository_DAL_.Model;
 public class Reservation
 {
     [Key]
-    public int Srl { get; set; }
+    public int srl { get; set; }
 
-    public string Reservation_Id { get; set; } = string.Empty;
+    public string reservation_id { get; set; } = string.Empty;
 
-    [ForeignKey("Users")]
-    public int Id { get; set; }
+    [ForeignKey("users")]
+    public int id { get; set; }
 
-    public string Cart { get; set; } = string.Empty;
+    public string cart { get; set; } = string.Empty;
 
-    public double CartPrice { get; set; }
+    public double cartprice { get; set; }
 
-    public DateTime CreatedTime { get; set; }
+    public DateTime createdtime { get; set; }
 
-    public DateTime? ConfirmedTime { get; set; }
+    public DateTime? confirmedtime { get; set; }
 
-    public DateTime ExpireTime { get; set; }
+    public DateTime expiretime { get; set; }
 
-    public bool IsExpired { get; set; }
+    public bool isexpired { get; set; }
 }

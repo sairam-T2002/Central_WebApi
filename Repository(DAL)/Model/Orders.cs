@@ -6,21 +6,27 @@ namespace Repository_DAL_.Model;
 public class Orders
 {
     [Key]
-    public int Srl { get; set; }
+    public int srl { get; set; }
 
-    public string Order_Id { get; set; }
+    public string order_id { get; set; }
 
-    [ForeignKey("Reservations")]
-    public string Reservation_Id { get; set; }
+    [ForeignKey("reservations")]
+    public string reservation_id { get; set; }
 
-    [ForeignKey("Users")]
-    public int Id { get; set; }
+    [ForeignKey("users")]
+    public int id { get; set; }
 
-    public double AmountPaid { get; set; }
+    public string paymentmethod {  get; set; }
 
-    public virtual Reservation Reservation { get; set; }
+    public string transactionref {  get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public double amountpaid { get; set; }
 
-    public DateTime? CancellendAt { get; set; } = DateTime.UtcNow;
+    public virtual Reservation reservation { get; set; }
+
+    public DateTime createdate { get; set; } = DateTime.UtcNow;
+
+    public DateTime? cancellendate { get; set; } = DateTime.UtcNow;
+
+    public string confirmationstatus { get; set; } = string.Empty;
 }

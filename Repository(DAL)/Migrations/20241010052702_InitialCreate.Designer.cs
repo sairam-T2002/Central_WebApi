@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Repository_DAL_;
@@ -11,9 +12,11 @@ using Repository_DAL_;
 namespace Repository_DAL_.Migrations
 {
     [DbContext(typeof(EFContext))]
-    partial class EFContextModelSnapshot : ModelSnapshot
+    [Migration("20241010052702_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,7 +130,7 @@ namespace Repository_DAL_.Migrations
                     b.Property<int>("defaultsearchimg")
                         .HasColumnType("integer");
 
-                    b.Property<string>("devurl")
+                    b.Property<string>("devUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -137,7 +140,7 @@ namespace Repository_DAL_.Migrations
                     b.Property<DateTime>("modifieddate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("produrl")
+                    b.Property<string>("prodUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -216,10 +219,6 @@ namespace Repository_DAL_.Migrations
                     b.Property<DateTime?>("cancellendate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("confirmationstatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("createdate")
                         .HasColumnType("timestamp with time zone");
 
@@ -230,20 +229,12 @@ namespace Repository_DAL_.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("paymentmethod")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("reservation_id")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("reservationsrl")
                         .HasColumnType("integer");
-
-                    b.Property<string>("transactionref")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("srl");
 

@@ -11,7 +11,7 @@ public class ApiLog
 
     public string log { get; set; }
 
-    public string Exception { get; set; }
+    public string exception { get; set; }
 
-    public DateTime DateTime { get; set; }
+    public DateTime datetime { get; set; }
 }

@@ -1,8 +1,9 @@
-﻿using Central_Service.Payment;
+﻿using Central_Service.DTO;
+using Central_Service.Payment;
 
 namespace Central_Service.Interface;
 
 public interface IPaymentService
 {
-    IPaymentDTO AcceptPayment( IPaymentDTO input, string PaymentMethod );
+    Task<PaymentDTO> AcceptPayment( IPaymentDTO input, string PaymentMethod );
 }
