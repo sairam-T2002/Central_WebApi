@@ -85,7 +85,8 @@ public class AppDataService : ServiceBase, IAppDataService
             var control = controls.FirstOrDefault();
             output.DefaultSearchBanner = BuildImageUrl(baseUri, control?.defaultsearchimg ?? 0, imageDict);
             output.Label = labels.OrderBy(ex => ex.label_id).Select(lb => lb.labeld).ToList();
-            output.CarouselUrls = images.Where(img => img.iscarousel)
+            output.CarouselUrls = images
+                                        .Where(img => img.iscarousel)
                                         .Select(img => BuildImageUrl(baseUri, img.image_srl, imageDict))
                                         .ToList();
             output.Categories = categories

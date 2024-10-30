@@ -2,7 +2,7 @@
 
 namespace Central_WebApi;
 
-public static class ServiceExtension
+public static class ServiceExtensions
 {
     public static void AddWebApiCors( this IServiceCollection services, IConfiguration configuration, string policyName )
     {

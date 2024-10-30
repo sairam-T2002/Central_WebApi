@@ -10,12 +10,12 @@ using Serilog.Events;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
+var CorsPolicy = builder.Configuration["CorsPolicy"] ?? "CorsPolicy";
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddWebApiCors(builder.Configuration, "AllowAll");
+builder.Services.AddWebApiCors(builder.Configuration, CorsPolicy);
 builder.Services.AddApiServices(builder.Configuration);
 
 builder.Services.AddSwaggerGen(c =>
@@ -61,7 +61,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-var logginFlag = builder.Configuration["EnableLogging"];
+var logginFlag = builder.Configuration["DisableLogging"];
 if(logginFlag == "False")
 {
     // Configure Serilog
@@ -99,7 +99,7 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 
-app.UseCors("AllowAll");
+app.UseCors(CorsPolicy);
 if (logginFlag == "False")
 {
     app.UseActionLogging();
