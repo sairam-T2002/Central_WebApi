@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace ExtensionMethods;
 
@@ -110,5 +111,15 @@ public static class Extensions
         }
 
         return true;
+    }
+
+    public static string Base64Encode( this string str ) 
+    { 
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(str));
+    }
+
+    public static string Base64Decode(this string str )
+    {
+        return Encoding.UTF8.GetString(Convert.FromBase64String(str));
     }
 }
