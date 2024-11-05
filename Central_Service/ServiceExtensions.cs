@@ -25,7 +25,7 @@ public static class ServiceExtensions
 
         services.AddScoped<TokenHelper>();
 
-        services.AddTransient<IObjectFactory, Service.ObjectFactory>();
+        services.AddSingleton<IObjectFactory, Service.ObjectFactory>();
 
 
 
