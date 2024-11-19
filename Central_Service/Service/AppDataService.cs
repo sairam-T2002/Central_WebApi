@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Repository_DAL_.Model;
 using Repository_DAL_;
 using ExtensionMethods;
+using FluentFTP;
 
 namespace Central_Service.Service;
 
@@ -171,6 +172,41 @@ public class AppDataService : ServiceBase, IAppDataService
             Logger.LogInformation($"Method name: {nameof(SaveCart)}, Exception Message: {ex.Message}, Exception: {ex.JSONStringify()}");
         }
         return 0;
+    }
+
+    public static void UploadFile( string ftpServer, string ftpUsername, string ftpPassword, string localFilePath, string remoteFilePath )
+    {
+        try
+        {
+            // Create an FTP client
+            using (var client = new FtpClient(ftpServer))
+            {
+                // Provide FTP credentials
+                client.Credentials = new System.Net.NetworkCredential(ftpUsername, ftpPassword);
+
+                // Connect to the FTP server
+                client.Connect();
+
+                // Check if the file exists on the server before uploading
+                if (!client.FileExists(remoteFilePath))
+                {
+                    // Upload the file
+                    client.UploadFile(localFilePath, remoteFilePath, FtpRemoteExists.Overwrite, true);
+                    Console.WriteLine("File uploaded successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("File already exists on the server.");
+                }
+
+                // Disconnect when done
+                client.Disconnect();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
     }
 
     #endregion
